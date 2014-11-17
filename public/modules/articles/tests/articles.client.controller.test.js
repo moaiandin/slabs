@@ -118,7 +118,7 @@
 			$httpBackend.flush();
 
 			// Test form inputs are reset
-			expect(scope.title).toEqual('ass');
+			expect(scope.title).toEqual('');
 			expect(scope.content).toEqual('');
 
 			// Test URL redirection after the article was created
