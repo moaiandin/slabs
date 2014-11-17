@@ -7,5 +7,7 @@ services:
   - mongodb
 before_script:
   - mkdir -p shippable/testresults
+  - mkdir -p shippable/codecoverage
 script:
   - grunt test
+

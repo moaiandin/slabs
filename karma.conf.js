@@ -17,7 +17,21 @@ module.exports = function(config) {
 		// Test results reporter to use
 		// Possible values: 'dots', 'progress', 'junit', 'growl', 'coverage'
 		//reporters: ['progress'],
-		reporters: ['progress','junit'],
+		reporters: ['progress', 'junit', 'coverage'],
+
+		coverageReporter : {
+			reporters : [
+				{
+					type   : 'cobertura',
+					dir    : 'shippable/',
+					subdir : 'codecoverage'
+				}
+			]
+		},
+
+		preprocessors : {
+			'public/modules/*/*.js' : ['coverage']
+		},
 
 		junitReporter: {
 			outputFile: 'shippable/testresults/result.xml',
