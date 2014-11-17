@@ -1,0 +1,42 @@
+<?xml version="1.0" ?>
+<!DOCTYPE coverage SYSTEM "http://cobertura.sourceforge.net/xml/coverage-04.dtd">
+<coverage lines-valid="3"  lines-covered="3"  line-rate="1"  branches-valid="0"  branches-covered="0"  branch-rate="1"  timestamp="1416254694211" complexity="0" version="0.1">
+<sources>
+	<source>/Users/elliotagro/Code/slabs</source>
+</sources>
+<packages>
+	<package name="articles"  line-rate="1"  branch-rate="1" >
+	<classes>
+		<class name="articles.client.module.js"  filename="public/modules/articles/articles.client.module.js"  line-rate="1"  branch-rate="1" >
+		<methods>
+		</methods>
+		<lines>
+			<line number="4"  hits="1"  branch="false" />
+		</lines>
+		</class>
+	</classes>
+	</package>
+	<package name="core"  line-rate="1"  branch-rate="1" >
+	<classes>
+		<class name="core.client.module.js"  filename="public/modules/core/core.client.module.js"  line-rate="1"  branch-rate="1" >
+		<methods>
+		</methods>
+		<lines>
+			<line number="4"  hits="1"  branch="false" />
+		</lines>
+		</class>
+	</classes>
+	</package>
+	<package name="users"  line-rate="1"  branch-rate="1" >
+	<classes>
+		<class name="users.client.module.js"  filename="public/modules/users/users.client.module.js"  line-rate="1"  branch-rate="1" >
+		<methods>
+		</methods>
+		<lines>
+			<line number="4"  hits="1"  branch="false" />
+		</lines>
+		</class>
+	</classes>
+	</package>
+</packages>
+</coverage>
