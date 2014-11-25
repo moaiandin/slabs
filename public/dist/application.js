@@ -382,18 +382,25 @@ angular.module('core').service('Menus', [
 ]);
 'use strict';
 
-angular.module('sidebar').directive('sidebar', [
-	function() {
-		return {
-			templateUrl: '/modules/sidebar/views/sidebar.html',
-			restrict: 'E',
-			link: function postLink(scope, element, attrs) {
-				// Sidebar directive logic
-				// ...
+angular.module('sidebar').controller('ApiListController', ['$scope','ApiSlabs',
 
-				//element.text('this is the sidebar directive');
-			}
-		};
+	function($scope, ApiSlabs) {
+
+		$scope.apiSlabs = ApiSlabs.query();
+
+	}
+
+]);
+
+'use strict';
+
+angular.module('sidebar').factory('ApiSlabs', ['$resource',
+	function($resource) {
+
+		// Apicomponents service logic
+
+		// Public API
+		return $resource('api-slabs/');
 	}
 ]);
 
@@ -403,21 +410,27 @@ angular.module('sidebar').directive('sidebar', [
 angular.module('stage').config(['$stateProvider',
 	function($stateProvider) {
 		// Stage state routing
-		$stateProvider.
-		state('stage', {
-			url: '/stage',
-			templateUrl: 'modules/stage/views/stage.client.view.html'
-		});
+		$stateProvider
+			.state('stage', {
+				url: '/stage',
+				templateUrl: 'modules/stage/views/stage.client.view.html'
+			})
+			.state('stage.api-components', {
+				templateUrl:'modules/sidebar/views/api-list.client.view.html'
+			});
 	}
 ]);
+
 'use strict';
 
-angular.module('stage').controller('StageController', ['$scope',
-	function($scope) {
-		// Controller Logic
-		// ...
+angular.module('stage').controller('StageController', ['$scope','$state',
+	function($scope, $state) {
+
+		$state.go('stage.api-components');
+
 	}
 ]);
+
 'use strict';
 
 angular.module('stage').directive('slab', [
