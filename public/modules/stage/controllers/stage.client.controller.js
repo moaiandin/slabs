@@ -1,8 +1,9 @@
 'use strict';
 
-angular.module('stage').controller('StageController', ['$scope',
-	function($scope) {
-		// Controller Logic
-		// ...
+angular.module('stage').controller('StageController', ['$scope','$state',
+	function($scope, $state) {
+
+		$state.go('stage.api-components');
+
 	}
 ]);
