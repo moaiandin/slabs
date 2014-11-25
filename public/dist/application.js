@@ -51,6 +51,16 @@ ApplicationConfiguration.registerModule('articles');
 ApplicationConfiguration.registerModule('core');
 'use strict';
 
+// Use application configuration module to register a new module
+ApplicationConfiguration.registerModule('sidebar');
+
+'use strict';
+
+// Use application configuration module to register a new module
+ApplicationConfiguration.registerModule('stage');
+
+'use strict';
+
 // Use Applicaion configuration module to register a new module
 ApplicationConfiguration.registerModule('users');
 'use strict';
@@ -368,6 +378,60 @@ angular.module('core').service('Menus', [
 
 		//Adding the topbar menu
 		this.addMenu('topbar');
+	}
+]);
+'use strict';
+
+angular.module('sidebar').directive('sidebar', [
+	function() {
+		return {
+			templateUrl: '/modules/sidebar/views/sidebar.html',
+			restrict: 'E',
+			link: function postLink(scope, element, attrs) {
+				// Sidebar directive logic
+				// ...
+
+				//element.text('this is the sidebar directive');
+			}
+		};
+	}
+]);
+
+'use strict';
+
+//Setting up route
+angular.module('stage').config(['$stateProvider',
+	function($stateProvider) {
+		// Stage state routing
+		$stateProvider.
+		state('stage', {
+			url: '/stage',
+			templateUrl: 'modules/stage/views/stage.client.view.html'
+		});
+	}
+]);
+'use strict';
+
+angular.module('stage').controller('StageController', ['$scope',
+	function($scope) {
+		// Controller Logic
+		// ...
+	}
+]);
+'use strict';
+
+angular.module('stage').directive('slab', [
+	function() {
+		return {
+			template: '<div></div>',
+			restrict: 'E',
+			link: function postLink(scope, element, attrs) {
+				// Slab directive logic
+				// ...
+
+				element.text('this is the slab directive');
+			}
+		};
 	}
 ]);
 'use strict';
