@@ -1,9 +1,9 @@
 <section data-ng-controller="SlabListController" class="sidebar full-height">
 	<slab-type-selector type-changed="typeChanged(slabTypeID)" ></slab-type-selector>
-	This is the API Component list
-	<ul>
-		<li data-ng-repeat="slab in slabList">
+	<ul class="list-group">
+		<li class="list-group-item" data-ng-repeat="slab in slabList">
 			{{slab.name}}
+			<span class="icon glyphicon glyphicon-move"></span>
 		</li>
 	</ul>
 </section>

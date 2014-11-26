@@ -8,9 +8,9 @@ angular.module('sidebar').factory('SlabLists', ['$resource',
 		// Public API
 		return {
 			api 			: $resource('api-slabs/'),
-			static 		: $resource('api-slabs/'),
-			processor : $resource('api-slabs/'),
-			output 		: $resource('api-slabs/')
+			static 		: $resource('static-data-slabs/'),
+			processor : $resource('data-processor-slabs/'),
+			output 		: $resource('output-slabs/')
 		};
 	}
 ]);

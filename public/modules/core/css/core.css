@@ -1,6 +1,9 @@
 .content {
 	margin-top: 50px;
 }
+.navbar-right {
+	margin-right:0px
+}
 .undecorated-link:hover {
 	text-decoration: none;
 }

@@ -1,5 +1,6 @@
-<section>
-	<button data-ng-repeat="slabtype in types" data-ng-click="buttonClicked(slabtype.id)">
+<div class="slab-type-selector btn-group" role="group">
+	<button type="button" class="btn btn-default btn-xs" data-ng-repeat="slabtype in types" data-ng-click="buttonClicked(slabtype.id)">
 		{{slabtype.label}}
 	</button>
-</section>
+</div>
+
