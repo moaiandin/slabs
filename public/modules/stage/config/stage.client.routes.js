@@ -9,8 +9,8 @@ angular.module('stage').config(['$stateProvider',
 				url: '/stage',
 				templateUrl: 'modules/stage/views/stage.client.view.html'
 			})
-			.state('stage.api-components', {
-				templateUrl:'modules/sidebar/views/api-list.client.view.html'
+			.state('stage.sidebar', {
+				templateUrl:'modules/sidebar/views/slab-list.client.view.html'
 			});
 	}
 ]);

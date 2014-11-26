@@ -3,7 +3,7 @@
 angular.module('stage').controller('StageController', ['$scope','$state',
 	function($scope, $state) {
 
-		$state.go('stage.api-components');
+		$state.go('stage.sidebar');
 
 	}
 ]);

@@ -382,11 +382,18 @@ angular.module('core').service('Menus', [
 ]);
 'use strict';
 
-angular.module('sidebar').controller('ApiListController', ['$scope','ApiSlabs',
+angular.module('sidebar').controller('SlabListController', ['$scope','SlabLists',
 
-	function($scope, ApiSlabs) {
+	function($scope, SlabLists) {
 
-		$scope.apiSlabs = ApiSlabs.query();
+		$scope.slabList = SlabLists.api.query();
+
+		$scope.typeChanged = function(id){
+
+			$scope.slabList = SlabLists[id].query();
+			console.log(id);
+
+		};
 
 	}
 
@@ -394,13 +401,62 @@ angular.module('sidebar').controller('ApiListController', ['$scope','ApiSlabs',
 
 'use strict';
 
-angular.module('sidebar').factory('ApiSlabs', ['$resource',
+angular.module('sidebar').directive('slabTypeSelector', ['Slabtypes',
+	function(Slabtypes) {
+		return {
+			templateUrl: '/modules/sidebar/views/slab-type-selector.client.view.html',
+			restrict: 'E',
+			link: function postLink(scope, element, attrs) {
+
+				scope.types = Slabtypes.getSlabTypes();
+
+				scope.buttonClicked = function(slabTypeID){
+					scope.typeChanged({slabTypeID:slabTypeID});
+				};
+
+			},
+			scope : {
+				typeChanged:'&'
+			}
+		};
+	}
+]);
+
+'use strict';
+
+angular.module('sidebar').factory('SlabLists', ['$resource',
 	function($resource) {
 
 		// Apicomponents service logic
 
 		// Public API
-		return $resource('api-slabs/');
+		return {
+			api 			: $resource('api-slabs/'),
+			static 		: $resource('api-slabs/'),
+			processor : $resource('api-slabs/'),
+			output 		: $resource('api-slabs/')
+		};
+	}
+]);
+
+'use strict';
+
+angular.module('sidebar').factory('Slabtypes', [
+	function() {
+
+		var slabTypes = [
+			{ id:'api', label:'api\'s' },
+			{ id:'static', label:'static data' },
+			{ id:'processor', label:'data processors' },
+			{ id:'output', label:'data output' }
+		];
+
+		// Public API
+		return {
+			getSlabTypes: function() {
+				return slabTypes;
+			}
+		};
 	}
 ]);
 
@@ -415,8 +471,8 @@ angular.module('stage').config(['$stateProvider',
 				url: '/stage',
 				templateUrl: 'modules/stage/views/stage.client.view.html'
 			})
-			.state('stage.api-components', {
-				templateUrl:'modules/sidebar/views/api-list.client.view.html'
+			.state('stage.sidebar', {
+				templateUrl:'modules/sidebar/views/slab-list.client.view.html'
 			});
 	}
 ]);
@@ -426,7 +482,7 @@ angular.module('stage').config(['$stateProvider',
 angular.module('stage').controller('StageController', ['$scope','$state',
 	function($scope, $state) {
 
-		$state.go('stage.api-components');
+		$state.go('stage.sidebar');
 
 	}
 ]);
