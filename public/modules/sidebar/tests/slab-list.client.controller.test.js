@@ -2,7 +2,7 @@
 
 (function() {
 	// Component list Controller Spec
-	describe('API list Controller Tests', function() {
+	describe('Slab list Controller Tests', function() {
 		// Initialize global variables
 		var ComponentListController,
 			scope,
@@ -45,7 +45,7 @@
 			$location = _$location_;
 
 			// Initialize the Component list controller.
-			ComponentListController = $controller('ApiListController', {
+			ComponentListController = $controller('SlabListController', {
 				$scope: scope
 			});
 		}));
