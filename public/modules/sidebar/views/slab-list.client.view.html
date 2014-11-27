@@ -1,9 +1,16 @@
 <section data-ng-controller="SlabListController" class="sidebar full-height">
+
 	<slab-type-selector type-changed="typeChanged(slabTypeID)" ></slab-type-selector>
-	<ul class="list-group">
-		<li class="list-group-item" data-ng-repeat="slab in slabList">
+
+	<ul class="list-group slab-list">
+		<li class="list-group-item slab-item"
+			data-ng-repeat="slab in slabList"
+			data-slab-id="{{slab.id}}
+			data-slab-type="{{slab.type}}
+			data-slab-name="{{slab.name}}">
 			{{slab.name}}
 			<span class="icon glyphicon glyphicon-move"></span>
 		</li>
 	</ul>
+
 </section>

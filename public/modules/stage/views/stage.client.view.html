@@ -1,6 +1,15 @@
 <section data-ng-controller="StageController" class="full-height">
 
 	<div class="stage full-height">
+
+		<slab data-ng-repeat="slab in slabs"
+			  id="slab.id"
+			  name="slab.name"
+			  type="slab.type"
+			  left="slab.left"
+			  top="slab.top" >
+		</slab>
+
 	</div>
 
 	<div data-ui-view class="full-height"> </div>

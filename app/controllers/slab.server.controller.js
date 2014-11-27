@@ -11,7 +11,7 @@ var mongoose = require('mongoose'),
 /**
  * List of Api slabs
  */
-var apiSlabList = [{name:'twitter'},{name:'facebook'}];
+var apiSlabList = [{name:'twitter', id:'0', type:'api'},{name:'facebook', id:'1', type:'api'}];
 exports.apiList = function(req, res) {
 
     res.status(200);
@@ -22,7 +22,7 @@ exports.apiList = function(req, res) {
 /**
  * List of Static Data slabs
  */
-var staticDataList = [{name:'argos sales'},{name:'government spending'}];
+var staticDataList = [{name:'argos sales', id:'0', type:'static'},{name:'government spending', id:'1', type:'static'}];
 exports.staticDataList = function(req, res) {
 
     res.status(200);
@@ -33,7 +33,7 @@ exports.staticDataList = function(req, res) {
 /**
  * List of Data Processing slabs
  */
-var processingSlabList = [{name:'data smasher'},{name:'correlator'}];
+var processingSlabList = [{name:'data smasher', id:'0', type:'processing'},{name:'correlator', id:'1', type:'processing'}];
 exports.processingList = function(req, res) {
 
     res.status(200);
@@ -44,7 +44,7 @@ exports.processingList = function(req, res) {
 /**
  * List of Output slabs
  */
-var outputSlabList = [{name:'bar chart'},{name:'pie chart'}];
+var outputSlabList = [{name:'bar chart', id:'0', type:'output'},{name:'pie chart', id:'1', type:'output'}];
 exports.outputList = function(req, res) {
 
     res.status(200);

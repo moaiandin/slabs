@@ -3,13 +3,17 @@
 angular.module('stage').directive('slab', [
 	function() {
 		return {
-			template: '<div></div>',
+			templateUrl: '/modules/stage/views/slab.client.view.html',
 			restrict: 'E',
 			link: function postLink(scope, element, attrs) {
-				// Slab directive logic
-				// ...
 
-				element.text('this is the slab directive');
+			},
+			scope: {
+				id:'=',
+				type:'=',
+				name:'=',
+				left:'=',
+				top:'='
 			}
 		};
 	}
