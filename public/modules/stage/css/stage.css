@@ -13,5 +13,12 @@
 }
 
 .stage .slab {
-    position:absolute
+    position:absolute;
+
+}
+
+.stage .run {
+    position: absolute;
+    right:10px;
+    top:10px;
 }

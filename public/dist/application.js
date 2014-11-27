@@ -495,6 +495,10 @@ angular.module('stage').controller('StageController', ['$scope','$state',
 
 		];
 
+		$scope.runSlabNetwork = function(){
+
+		};
+
 		$('.stage').droppable({
 
 			drop: function( event, ui ) {
