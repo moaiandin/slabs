@@ -5,12 +5,12 @@
 // todo - use controllerAs syntax with a vm var.
 // todo - move bindable members to the top : https://github.com/johnpapa/angularjs-styleguide#style-y033
 
-angular.module('sidebar').controller('SlabListController', ['$scope','SlabLists','$timeout',
+angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServices','$timeout',
 
-	function($scope, SlabLists, $timeout) {
+	function($scope, SlabsServices, $timeout) {
 
 		$scope.typeChanged = function(id){
-			$scope.slabList = SlabLists[id].query();
+			$scope.slabList = SlabsServices.slabList.query({slabType:id});
 		};
 
 		$scope.$watch('slabList', function(){
@@ -19,7 +19,7 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabLists'
 			},100);
 		});
 
-		$scope.slabList = SlabLists.api.query();
+		$scope.slabList = SlabsServices.slabList.query({slabType:'api'});
 
 	}
 

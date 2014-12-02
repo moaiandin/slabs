@@ -7,9 +7,9 @@
 // todo - use controllerAs syntax with a vm var.
 // todo - move bindable members to the top : https://github.com/johnpapa/angularjs-styleguide#style-y033
 
-angular.module('stage').controller('StageController', ['$scope','$state','Slabsettings','$sce',
+angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce',
 
-	function($scope, $state, Slabsettings, $sce) {
+	function($scope, $state, SlabsServices, $sce) {
 
 		$state.go('stage.sidebar');
 
@@ -25,7 +25,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','Slabse
 
 		$scope.openSlabSettings = function(slab){
 
-			Slabsettings.get({slabName:slab.name}, function(obj){
+			SlabsServices.slab.get({slabType:slab.type, slabID:slab.id}, function(obj){
 
 				if(obj.file){
 
@@ -64,6 +64,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','Slabse
 					top		:top
 				};
 
+				// add slab to slab network
 				$scope.slabs.push(slab);
 				$scope.$digest();
 

@@ -4,25 +4,16 @@ var slabs = require('../controllers/slab.server.controller.js');
 
 module.exports = function(app) {
 
+	/* Slab Types */
+	app.route('/slab/types/')
+		.get(slabs.types);
+
 	/* Slab Lists */
-
-	// todo - these 4 should all be one end point
-
-	app.route('/api-slabs')
-		.get(slabs.apiList);
-
-	app.route('/static-data-slabs')
-		.get(slabs.staticDataList);
-
-	app.route('/data-processor-slabs')
-		.get(slabs.processingList);
-
-	app.route('/output-slabs')
-		.get(slabs.outputList);
-
+	app.route('/slab/:slabType')
+		.get(slabs.slabList);
 
 	/* Slab Settings */
-	app.route('/slab/:slabName')
+	app.route('/slab/:slabType/:slabID')
 		.get(slabs.settings);
 
 };
