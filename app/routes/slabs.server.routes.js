@@ -1,9 +1,12 @@
 'use strict';
 
 var slabs = require('../controllers/slab.server.controller.js');
-var twitterExample = require('../../app/controllers/twitter-api.server.controller');
 
 module.exports = function(app) {
+
+	/* Slab Lists */
+
+	// todo - these 4 should all be one end point
 
 	app.route('/api-slabs')
 		.get(slabs.apiList);
@@ -18,9 +21,8 @@ module.exports = function(app) {
 		.get(slabs.outputList);
 
 
-
-	/* TESTING */
-	app.route('/twitter')
-		.get(twitterExample.getData);
+	/* Slab Settings */
+	app.route('/slab/:slabName')
+		.get(slabs.settings);
 
 };

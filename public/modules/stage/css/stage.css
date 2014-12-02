@@ -3,6 +3,12 @@
     height:100%;
     float:left;
     position:relative;
+    background:#000000;
+}
+
+.stage .stageWrapper {
+    width:100%;
+    height:100%;
     background-color:#F7FAFB;
     background-image: linear-gradient(white 2px, transparent 2px),
     linear-gradient(90deg, white 2px, transparent 2px),
@@ -12,13 +18,26 @@
     background-position:-2px -2px, -2px -2px, -1px -1px, -1px -1px
 }
 
-.stage .slab {
+.stage .darken {
+    opacity:0.5;
+}
+
+.stageWrapper .slab {
     position:absolute;
 
 }
 
-.stage .run {
+.stageWrapper .run {
     position: absolute;
     right:10px;
     top:10px;
+}
+
+iFrame {
+    position:absolute;
+    width:500px;
+    height:500px;
+    left:calc(50% - 250px);
+    top:calc(50% - 250px);
+    border:0
 }

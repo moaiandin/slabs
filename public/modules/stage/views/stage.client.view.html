@@ -2,15 +2,22 @@
 
 	<div class="stage full-height">
 
-		<btn class="run btn btn-success btn-med" data-ng-click="runSlabNetwork()">Run Slab Network</btn>
+		<div class="stageWrapper" data-ng-class="{darken:settingsPageVisible}">
 
-		<slab data-ng-repeat="slab in slabs"
-			  id="slab.id"
-			  name="slab.name"
-			  type="slab.type"
-			  left="slab.left"
-			  top="slab.top" >
-		</slab>
+			<btn class="run btn btn-success btn-med" data-ng-click="runSlabNetwork()">Run Slab Network</btn>
+
+			<slab data-ng-repeat="slab in slabs"
+				  id="slab.id"
+				  name="slab.name"
+				  type="slab.type"
+				  left="slab.left"
+				  top="slab.top"
+				  open-settings="openSlabSettings(slab)">
+			</slab>
+
+		</div>
+
+		<iframe id="settingsFrame" data-ng-show="settingsPageVisible"></iframe>
 
 	</div>
 

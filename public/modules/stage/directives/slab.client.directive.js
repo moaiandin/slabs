@@ -13,7 +13,8 @@ angular.module('stage').directive('slab', [
 				type:'=',
 				name:'=',
 				left:'=',
-				top:'='
+				top:'=',
+				openSettings:'&'
 			}
 		};
 	}

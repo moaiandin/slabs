@@ -3,9 +3,11 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-    _ = require('lodash');
-
+var mongoose    = require('mongoose'),
+    _           = require('lodash'),
+    swig        = require('swig'),
+    path        = require('path'),
+    errorHandler = require('./errors.server.controller');
 
 
 /**
@@ -49,5 +51,36 @@ exports.outputList = function(req, res) {
 
     res.status(200);
     res.json(outputSlabList);
+
+};
+
+/**
+ * Get the settings iframe for a particular slab
+ */
+exports.settings = function(req, res){
+
+    var slabName = req.params.slabName;
+
+    var pathStr = path.join(__dirname,'../slabs/'+slabName+'/'+slabName+'.html');
+
+    var renderedFile;
+
+    try {
+        renderedFile = swig.renderFile(pathStr, {});
+    }catch(err){
+        return res.status(400).send({
+            message: errorHandler.getErrorMessage(err)
+        });
+    }
+
+    if(renderedFile){
+
+        var resp = {
+            file : renderedFile
+        };
+
+        res.status(200);
+        res.json(resp);
+    }
 
 };
