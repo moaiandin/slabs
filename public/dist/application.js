@@ -102,7 +102,9 @@ angular.module('articles').config(['$stateProvider',
 'use strict';
 
 angular.module('articles').controller('ArticlesController', ['$scope', '$stateParams', '$location', 'Authentication', 'Articles',
+
 	function($scope, $stateParams, $location, Authentication, Articles) {
+
 		$scope.authentication = Authentication;
 
 		$scope.create = function() {
@@ -157,6 +159,7 @@ angular.module('articles').controller('ArticlesController', ['$scope', '$statePa
 		};
 	}
 ]);
+
 'use strict';
 
 //Articles service used for communicating with the articles REST endpoints
@@ -380,6 +383,22 @@ angular.module('core').service('Menus', [
 		this.addMenu('topbar');
 	}
 ]);
+'use strict';
+
+angular.module('stage').factory('SlabsServices', ['$resource',
+	function($resource) {
+
+		// Public API
+		return {
+			network			 : $resource('/network/'),
+			slabTypes		 : $resource('/slab/types'),
+			slab 				 : $resource('/slab/:slabType/:slabID'),
+			slabList 		 : $resource('/slab/:slabType')
+		};
+
+	}
+]);
+
 /* global $:false */
 'use strict';
 
@@ -387,12 +406,12 @@ angular.module('core').service('Menus', [
 // todo - use controllerAs syntax with a vm var.
 // todo - move bindable members to the top : https://github.com/johnpapa/angularjs-styleguide#style-y033
 
-angular.module('sidebar').controller('SlabListController', ['$scope','SlabLists','$timeout',
+angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServices','$timeout',
 
-	function($scope, SlabLists, $timeout) {
+	function($scope, SlabsServices, $timeout) {
 
 		$scope.typeChanged = function(id){
-			$scope.slabList = SlabLists[id].query();
+			$scope.slabList = SlabsServices.slabList.query({slabType:id});
 		};
 
 		$scope.$watch('slabList', function(){
@@ -401,7 +420,7 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabLists'
 			},100);
 		});
 
-		$scope.slabList = SlabLists.api.query();
+		$scope.slabList = SlabsServices.slabList.query({slabType:'api'});
 
 	}
 
@@ -409,14 +428,14 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabLists'
 
 'use strict';
 
-angular.module('sidebar').directive('slabTypeSelector', ['Slabtypes',
-	function(Slabtypes) {
+angular.module('sidebar').directive('slabTypeSelector', ['SlabsServices',
+	function(SlabsServices) {
 		return {
 			templateUrl: '/modules/sidebar/views/slab-type-selector.client.view.html',
 			restrict: 'E',
 			link: function postLink(scope, element, attrs) {
 
-				scope.types = Slabtypes.getSlabTypes();
+				scope.types = SlabsServices.slabTypes.query();
 
 				scope.buttonClicked = function(slabTypeID){
 					scope.typeChanged({slabTypeID:slabTypeID});
@@ -425,44 +444,6 @@ angular.module('sidebar').directive('slabTypeSelector', ['Slabtypes',
 			},
 			scope : {
 				typeChanged:'&'
-			}
-		};
-	}
-]);
-
-'use strict';
-
-angular.module('sidebar').factory('SlabLists', ['$resource',
-	function($resource) {
-
-		// Apicomponents service logic
-
-		// Public API
-		return {
-			api 			: $resource('api-slabs/'),
-			static 		: $resource('static-data-slabs/'),
-			processor : $resource('data-processor-slabs/'),
-			output 		: $resource('output-slabs/')
-		};
-	}
-]);
-
-'use strict';
-
-angular.module('sidebar').factory('Slabtypes', [
-	function() {
-
-		var slabTypes = [
-			{ id:'api', label:'api\'s' },
-			{ id:'static', label:'static data' },
-			{ id:'processor', label:'data processors' },
-			{ id:'output', label:'data output' }
-		];
-
-		// Public API
-		return {
-			getSlabTypes: function() {
-				return slabTypes;
 			}
 		};
 	}
@@ -488,15 +469,16 @@ angular.module('stage').config(['$stateProvider',
 /* global $:false */
 /* global settingsFrame:false */
 /* global window:false */
+/* global jsPlumb:false */
 'use strict';
 
 // todo - tests for this class.
 // todo - use controllerAs syntax with a vm var.
 // todo - move bindable members to the top : https://github.com/johnpapa/angularjs-styleguide#style-y033
 
-angular.module('stage').controller('StageController', ['$scope','$state','Slabsettings','$sce',
+angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce',
 
-	function($scope, $state, Slabsettings, $sce) {
+	function($scope, $state, SlabsServices, $sce) {
 
 		$state.go('stage.sidebar');
 
@@ -505,14 +487,28 @@ angular.module('stage').controller('StageController', ['$scope','$state','Slabse
 
 		$scope.settingsPageVisible = false;
 
-		// todo - make a call to the server posting the current slab setup
 		$scope.runSlabNetwork = function(){
-			console.log('run slab network');
+
+			var networkObject = {
+				title : 'sample network',
+				slabs : $scope.slabs
+			};
+
+			console.log(networkObject);
+
+			SlabsServices.network.save({}, networkObject,
+				function(resp){
+				  console.log('network success!!');
+					console.log(resp);
+			},function(resp){
+					console.log('network fail...');
+					console.log(resp);
+			});
 		};
 
 		$scope.openSlabSettings = function(slab){
 
-			Slabsettings.get({slabName:slab.name}, function(obj){
+			SlabsServices.slab.get({slabType:slab.type, slabID:slab.id}, function(obj){
 
 				if(obj.file){
 
@@ -536,12 +532,19 @@ angular.module('stage').controller('StageController', ['$scope','$state','Slabse
 
 			drop: function( event, ui ) {
 
+				console.log('dropped');
+
 				var item 			= ui.helper[0];
 				var slabID 		= item.getAttribute('data-slab-id');
 				var slabType  = item.getAttribute('data-slab-type');
 				var slabName  = item.getAttribute('data-slab-name');
 				var left			= ui.position.left;
-				var top				= ui.position.top;
+				var top				= ui.position.top - 50; // the 50 is the header
+
+				if(!slabID || !slabName || !slabType  ){
+					console.log('slab dropped from the stage.');
+					return;
+				}
 
 				var slab = {
 					id		:slabID,
@@ -551,8 +554,22 @@ angular.module('stage').controller('StageController', ['$scope','$state','Slabse
 					top		:top
 				};
 
+				// add slab to slab network
 				$scope.slabs.push(slab);
 				$scope.$digest();
+
+
+				jsPlumb.makeSource($('.source'), {
+					anchor: 'Continuous'
+				});
+				jsPlumb.makeTarget($('.target'), {
+					anchor: 'Continuous'
+				});
+
+				jsPlumb.draggable($('.panel'), {
+					containment:'#stageContainer'
+				});
+
 
 			}
 
@@ -562,6 +579,13 @@ angular.module('stage').controller('StageController', ['$scope','$state','Slabse
 			$scope.settingsPageVisible = false;
 			$scope.$digest();
 		};
+
+
+		jsPlumb.ready(function() {
+
+			jsPlumb.setContainer($('#stageContainer'));
+
+		});
 
 	}
 
@@ -586,16 +610,6 @@ angular.module('stage').directive('slab', [
 				openSettings:'&'
 			}
 		};
-	}
-]);
-
-'use strict';
-
-angular.module('stage').factory('Slabsettings', ['$resource',
-	function($resource) {
-
-		// Public API
-		return $resource('/slab/:slabName');
 	}
 ]);
 

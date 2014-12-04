@@ -2,11 +2,11 @@
     width:75%;
     height:100%;
     float:left;
-    position:relative;
     background:#000000;
 }
 
 .stage .stageWrapper {
+    position:relative;
     width:100%;
     height:100%;
     background-color:#F7FAFB;
@@ -41,3 +41,14 @@ iFrame {
     top:calc(50% - 250px);
     border:0
 }
+
+
+.item {
+    border: 1px solid black;
+    background-color: #ddddff;
+    width: 100px;
+    height: 100px;
+    position: absolute;
+}
+
+

@@ -27,7 +27,8 @@ module.exports = {
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.js',
 				'public/lib/jquery/dist/jquery.js',
 				'public/lib/jquery-ui/jquery-ui.js',
-				'public/lib/bootstrap/dist/js/bootstrap.js'
+				'public/lib/bootstrap/dist/js/bootstrap.js',
+				'public/lib/jsplumb/dist/js/jquery.jsPlumb-1.7.2.js'
 			]
 		},
 		css: [

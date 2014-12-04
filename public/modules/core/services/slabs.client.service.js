@@ -5,7 +5,7 @@ angular.module('stage').factory('SlabsServices', ['$resource',
 
 		// Public API
 		return {
-			network			 : $resource('/slabs/'),
+			network			 : $resource('/network/'),
 			slabTypes		 : $resource('/slab/types'),
 			slab 				 : $resource('/slab/:slabType/:slabID'),
 			slabList 		 : $resource('/slab/:slabType')

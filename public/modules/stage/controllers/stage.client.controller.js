@@ -1,6 +1,7 @@
 /* global $:false */
 /* global settingsFrame:false */
 /* global window:false */
+/* global jsPlumb:false */
 'use strict';
 
 // todo - tests for this class.
@@ -18,9 +19,23 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		$scope.settingsPageVisible = false;
 
-		// todo - make a call to the server posting the current slab setup
 		$scope.runSlabNetwork = function(){
-			console.log('run slab network');
+
+			var networkObject = {
+				title : 'sample network',
+				slabs : $scope.slabs
+			};
+
+			console.log(networkObject);
+
+			SlabsServices.network.save({}, networkObject,
+				function(resp){
+				  console.log('network success!!');
+					console.log(resp);
+			},function(resp){
+					console.log('network fail...');
+					console.log(resp);
+			});
 		};
 
 		$scope.openSlabSettings = function(slab){
@@ -49,12 +64,19 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 			drop: function( event, ui ) {
 
+				console.log('dropped');
+
 				var item 			= ui.helper[0];
 				var slabID 		= item.getAttribute('data-slab-id');
 				var slabType  = item.getAttribute('data-slab-type');
 				var slabName  = item.getAttribute('data-slab-name');
 				var left			= ui.position.left;
-				var top				= ui.position.top;
+				var top				= ui.position.top - 50; // the 50 is the header
+
+				if(!slabID || !slabName || !slabType  ){
+					console.log('slab dropped from the stage.');
+					return;
+				}
 
 				var slab = {
 					id		:slabID,
@@ -68,6 +90,19 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				$scope.slabs.push(slab);
 				$scope.$digest();
 
+
+				jsPlumb.makeSource($('.source'), {
+					anchor: 'Continuous'
+				});
+				jsPlumb.makeTarget($('.target'), {
+					anchor: 'Continuous'
+				});
+
+				jsPlumb.draggable($('.panel'), {
+					containment:'#stageContainer'
+				});
+
+
 			}
 
 		});
@@ -76,6 +111,13 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			$scope.settingsPageVisible = false;
 			$scope.$digest();
 		};
+
+
+		jsPlumb.ready(function() {
+
+			jsPlumb.setContainer($('#stageContainer'));
+
+		});
 
 	}
 
