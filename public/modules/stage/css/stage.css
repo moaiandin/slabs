@@ -3,6 +3,7 @@
     height:100%;
     float:left;
     background:#000000;
+    position:relative;
 }
 
 .stage .stageWrapper {
@@ -24,13 +25,13 @@
 
 .stageWrapper .slab {
     position:absolute;
-
 }
 
-.stageWrapper .run {
+.stage .run {
     position: absolute;
     right:10px;
     top:10px;
+    z-index: 5;
 }
 
 iFrame {
@@ -51,4 +52,22 @@ iFrame {
     position: absolute;
 }
 
+.stage .connectors {
+    position: relative;
+    float:left;
+    height:5px;
+    width:100%;
+}
 
+.stage .anchor {
+    width:10px;
+    height:10px;
+    background:black;
+    position:absolute;
+}
+
+.stage .anchorA { left:0; top:0 }
+
+.stage .anchorB { left:50%; top:0 }
+
+.stage .anchorC { right:0; top:0 }
