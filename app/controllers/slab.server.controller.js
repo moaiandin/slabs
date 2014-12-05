@@ -34,10 +34,10 @@ exports.types = function(req, res){
 exports.slabList = function(req, res){
 
     /* TESTING LISTS */
-    var apiSlabList = [{name:'twitter api', id:'twitter', type:'api'},{name:'facebook', id:'1', type:'api'}];
-    var staticDataList = [{name:'argos sales', id:'0', type:'static'},{name:'government spending', id:'1', type:'static'}];
-    var processingSlabList = [{name:'data smasher', id:'0', type:'processing'},{name:'correlator', id:'1', type:'processing'}];
-    var outputSlabList = [{name:'bar chart', id:'bar', type:'output'},{name:'pie chart', id:'pie', type:'output'}];
+    var apiSlabList = [{name:'twitter api', id:'twitter-api', type:'api', in:0, out:3 },{name:'facebook', id:'facebook', type:'api', in:0, out:3 }];
+    var staticDataList = [{name:'argos sales', id:'argos', type:'static', in:0, out:3 },{name:'government spending', id:'government', type:'static', in:0, out:3 }];
+    var processingSlabList = [{name:'data smasher', id:'data-smasher', type:'processing', in:3, out:3 },{name:'correlator', id:'correlator', type:'processing', in:3, out:3 }];
+    var outputSlabList = [{name:'bar chart', id:'bar-chart', type:'output', in:3, out:0 },{name:'pie chart', id:'pie-chart', type:'output', in:3, out:0 }];
 
     var slabType = req.params.slabType;
 

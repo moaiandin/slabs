@@ -10,10 +10,13 @@ angular.module('stage').directive('slab', [
 			},
 			scope: {
 				id:'=',
+				guid:'=',
 				type:'=',
 				name:'=',
 				left:'=',
 				top:'=',
+				in:'=',
+				out:'=',
 				openSettings:'&'
 			}
 		};

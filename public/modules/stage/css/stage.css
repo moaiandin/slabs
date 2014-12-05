@@ -52,22 +52,20 @@ iFrame {
     position: absolute;
 }
 
-.stage .connectors {
-    position: relative;
-    float:left;
-    height:5px;
-    width:100%;
+.stage .aLabel {
+    background-color:white;
+    padding:0.4em;
+    font:12px sans-serif;
+    color:#444;
+    z-index:21;
+    border:1px dotted gray;
+    opacity:0.8;
+    filter:alpha(opacity=80);
+    cursor: pointer;
+}
+.stage .aLabel._jsPlumb_hover {
+    background-color:#5C96BC;
+    color:white;
+    border:1px solid white;
 }
 
-.stage .anchor {
-    width:10px;
-    height:10px;
-    background:black;
-    position:absolute;
-}
-
-.stage .anchorA { left:0; top:0 }
-
-.stage .anchorB { left:50%; top:0 }
-
-.stage .anchorC { right:0; top:0 }
