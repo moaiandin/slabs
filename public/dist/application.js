@@ -466,10 +466,7 @@ angular.module('stage').config(['$stateProvider',
 	}
 ]);
 
-/* global $:false */
-/* global settingsFrame:false */
-/* global window:false */
-/* global jsPlumb:false */
+/* global $:false, _:false, window:false, jsPlumb:false */
 'use strict';
 
 // todo - tests for this class.
@@ -511,15 +508,10 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 			SlabsServices.slab.get({slabType:slab.type, slabID:slab.id}, function(obj){
 
-				if(obj.file){
+				if(obj.url){
 
 					$scope.settingsPageVisible = true;
-
-					// write the settings file to the settings iFrame
-					var iFrame = settingsFrame.contentWindow;
-					iFrame.document.open();
-					iFrame.document.write(obj.file);
-					iFrame.document.close();
+					$scope.iframeSrc = obj.url;
 
 				}else{
 					console.log('error loading settings file');
@@ -529,16 +521,49 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		};
 
-		var init = function(connection) {
+		// update the slabs array with the new connection.
+		var updateConnections = function(sourceId, targetId, remove){
 
-			var targetId = $(connection.target).data('slab-name');
-			var sourceId = $(connection.source).data('slab-name');
+			_($scope.slabs).each(function(item){
 
-			connection.getOverlay('label').setLabel( sourceId+ ' - ' + targetId);
-			connection.bind('editCompleted', function(o) {
-				if (typeof console !== 'undefined')
-					console.log('connection edited. path is now ', o.path);
+				if(item.guid === targetId){
+
+					if(remove !== true){
+						item.dependencies = _.without(item.dependencies, sourceId);
+						item.dependencies.push(sourceId);
+					}else{
+						item.dependencies = _.without(item.dependencies, sourceId);
+					}
+
+				}
+
 			});
+
+		};
+
+		var newConnection = function(connection) {
+
+			// set the label
+			var targetName = $(connection.target).data('slab-name');
+			var sourceName = $(connection.source).data('slab-name');
+			connection.getOverlay('label').setLabel( sourceName+ ' - ' + targetName);
+
+			// update the slabs array to show the new connection
+			var targetId 	= connection.target.id;
+			var sourceId 	= connection.source.id;
+			console.log(sourceId+ ' is now connected to '+targetId );
+			updateConnections(sourceId, targetId);
+
+		};
+
+		var removeConnection = function(connection){
+
+			// update the slabs array to show the new connection
+			var targetId 	= connection.target.id;
+			var sourceId 	= connection.source.id;
+			console.log(sourceId+ ' is now NOT connected to '+targetId );
+			updateConnections(sourceId, targetId, true);
+
 		};
 
 		var instance;
@@ -618,12 +643,6 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		};
 
-		setTimeout(function(){
-			initPlumb();
-		}, 0);
-
-
-
 
 		$('.stage').droppable({
 
@@ -646,12 +665,14 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				var top				= ui.position.top - 50; // the 50 is the header
 
 				var slab = {
-					guid  :guid,
-					id		:slabID,
-					type	:slabType,
-					name	:slabName,
-					left	:left,
-					top		:top
+					guid  				:guid,
+					id						:slabID,
+					type					:slabType,
+					name					:slabName,
+					left					:left,
+					top						:top,
+					settings			:{setting:'test setting', setting2:'test setting'},
+					dependencies 	:[]
 				};
 
 				// add slab to slab network
@@ -672,7 +693,11 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 				// listen for new connections; initialise them the same way we initialise the connections at startup.
 				instance.bind('connection', function(connInfo, originalEvent) {
-					init(connInfo.connection);
+					newConnection(connInfo.connection);
+				});
+
+				instance.bind('connectionDetached', function(connInfo, originalEvent) {
+					removeConnection(connInfo.connection);
 				});
 
 				instance.draggable(jsPlumb.getSelector('.stage-container .panel'), { grid: [20, 20] });
@@ -687,6 +712,8 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			$scope.$digest();
 		};
 
+
+		initPlumb();
 
 	}
 
