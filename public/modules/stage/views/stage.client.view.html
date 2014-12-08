@@ -1,24 +1,24 @@
-<section data-ng-controller="StageController" class="full-height">
+<section data-ng-controller="StageController as stageController" class="full-height">
 
 	<div class="stage full-height">
 
-		<btn class="run btn btn-success btn-med" data-ng-click="runSlabNetwork()">Run Slab Network</btn>
+		<btn class="run btn btn-success btn-med" data-ng-click="stageController.runSlabNetwork()">Run Slab Network</btn>
 
-		<div id="stage-container" class="stage-container stageWrapper" data-ng-class="{darken:settingsPageVisible}">
+		<div id="stage-container" class="stage-container stageWrapper" data-ng-class="{darken:stageController.settingsPageVisible}">
 
-			<slab data-ng-repeat="slab in slabs"
+			<slab data-ng-repeat="slab in stageController.slabs"
 				  id="slab.id"
 				  guid="slab.guid"
 				  name="slab.name"
 				  type="slab.type"
 				  left="slab.left"
 				  top="slab.top"
-				  open-settings="openSlabSettings(slab)">
+				  open-settings="stageController.openSlabSettings(slab)">
 			</slab>
 
 		</div>
 
-		<iframe src="{{iframeSrc}}" id="settingsFrame" data-ng-show="settingsPageVisible"></iframe>
+		<iframe src="{{stageController.iframeSrc}}" id="settingsFrame" data-ng-show="stageController.settingsPageVisible"></iframe>
 
 	</div>
 

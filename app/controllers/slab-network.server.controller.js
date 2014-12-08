@@ -34,6 +34,8 @@ var runSlab = function(item, callback, fullList){
                 callback();
                 break;
             case 'output' :
+                // todo - pass the results of the dependencies to the output
+                // and then display.
                 callback();
                 break;
         }
