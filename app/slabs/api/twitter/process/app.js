@@ -1,12 +1,14 @@
 'use strict';
 
 
+var Q = require('q');
+
 /**
  * getData - passes in the config object from the client
  */
-exports.getData = function(req, res) {
+exports.getData = function(config) {
 
-    var configObj = req.params.config;
+    var deferred = Q.defer();
 
     var sampleData = {
 
@@ -25,6 +27,10 @@ exports.getData = function(req, res) {
 
     };
 
-    res.json(sampleData);
+    setTimeout(function(){
+        deferred.resolve(sampleData);
+    },1000);
+
+    return deferred.promise;
 
 };

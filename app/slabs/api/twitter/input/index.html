@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap-theme.min.css">
     <link rel="stylesheet" href="https://rawgit.com/Eonasdan/bootstrap-datetimepicker/master/build/css/bootstrap-datetimepicker.min.css">
+    <link rel="stylesheet" href="./styles.css">
 
 </head>
 <body>
@@ -17,7 +18,6 @@
     </div>
 
     <form role="form">
-
         <div class="form-group">
             <label for="searchQuery">Search Query</label>
             <input class="form-control" id="searchQuery" placeholder="Enter search text">
@@ -47,28 +47,8 @@
     <script type="text/javascript" src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
     <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.8.4/moment.min.js"></script>
     <script type="text/javascript" src="https://rawgit.com/Eonasdan/bootstrap-datetimepicker/master/src/js/bootstrap-datetimepicker.js"></script>
-    <script>
+    <script type="text/javascript" src="./app.js"></script>
 
-        $('#fromDate').datetimepicker({
-            pickTime: false
-        });
-        $('#toDate').datetimepicker({
-            pickTime: false
-        });
-
-        var compileObject = function (){
-            window.top.submitSlabData({name:"twitter"});
-        };
-
-    </script>
-
-    <style>
-
-        body{
-            padding:15px
-        }
-
-    </style>
 
 </body>
 </html>

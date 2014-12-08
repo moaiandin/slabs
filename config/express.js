@@ -21,7 +21,8 @@ var fs = require('fs'),
 	flash = require('connect-flash'),
 	config = require('./config'),
 	consolidate = require('consolidate'),
-	path = require('path');
+	path = require('path'),
+  slabs = require('./slabs');
 
 module.exports = function(db) {
 	// Initialize express app
@@ -112,6 +113,8 @@ module.exports = function(db) {
 
 	// Setting the app router and static folder
 	app.use(express.static(path.resolve('./public')));
+
+	slabs.addSlabsFiles(app);
 
 	// Globbing routing files
 	config.getGlobbedFiles('./app/routes/**/*.js').forEach(function(routePath) {

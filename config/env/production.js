@@ -18,6 +18,7 @@ module.exports = {
 				'public/lib/angular-bootstrap/ui-bootstrap-tpls.min.js',
 				'public/lib/jquery/dist/jquery.min.js',
 				'public/lib/jquery-ui/jquery-ui.min.js',
+				'public/lib/underscore/underscore-min.js',
 				'public/lib/bootstrap/dist/js/bootstrap.min.js',
 				'public/lib/jsplumb/dist/js/jquery.jsPlumb-1.7.2-min.js'
 			]

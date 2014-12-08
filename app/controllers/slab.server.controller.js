@@ -34,10 +34,10 @@ exports.types = function(req, res){
 exports.slabList = function(req, res){
 
     /* TESTING LISTS */
-    var apiSlabList = [{name:'twitter api', id:'twitter-api', type:'api', in:0, out:3 },{name:'facebook', id:'facebook', type:'api', in:0, out:3 }];
+    var apiSlabList = [{name:'twitter api', id:'twitter', type:'api', in:0, out:3 },{name:'facebook', id:'facebook', type:'api', in:0, out:3 }];
     var staticDataList = [{name:'argos sales', id:'argos', type:'static', in:0, out:3 },{name:'government spending', id:'government', type:'static', in:0, out:3 }];
-    var processingSlabList = [{name:'data smasher', id:'data-smasher', type:'processing', in:3, out:3 },{name:'correlator', id:'correlator', type:'processing', in:3, out:3 }];
-    var outputSlabList = [{name:'bar chart', id:'bar-chart', type:'output', in:3, out:0 },{name:'pie chart', id:'pie-chart', type:'output', in:3, out:0 }];
+    var processingSlabList = [{name:'data smasher', id:'data-smasher', type:'processing', in:3, out:1 },{name:'correlator', id:'correlator', type:'processing', in:3, out:1 }];
+    var outputSlabList = [{name:'bar chart', id:'bar', type:'output', in:1, out:0 },{name:'pie chart', id:'pie', type:'output', in:1, out:0 }];
 
     var slabType = req.params.slabType;
 
@@ -71,33 +71,21 @@ exports.slabList = function(req, res){
 
 
 /**
- * Get the settings iframe for a particular slab
+ * Get the input settings url for a particular slab
  */
 exports.settings = function(req, res){
 
     var slabID = req.params.slabID;
     var slabType = req.params.slabType;
 
-    var pathStr = path.join(__dirname,'../slabs/'+slabType+'/'+slabID+'/input.html');
+    var assetStr = './slab-files/'+slabType+'/'+slabID+'/input';
 
-    var renderedFile;
+    var resp = {
+        url : assetStr
+    };
 
-    try {
-        renderedFile = swig.renderFile(pathStr, {});
-    }catch(err){
-        return res.status(400).send({
-            message: errorHandler.getErrorMessage(err)
-        });
-    }
-
-    if(renderedFile){
-
-        var resp = {
-            file : renderedFile
-        };
-
-        res.status(200);
-        res.json(resp);
-    }
+    res.status(200);
+    res.json(resp);
 
 };
+

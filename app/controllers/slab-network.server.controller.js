@@ -1,17 +1,91 @@
+/* global processSlabs:true */
+
 'use strict';
 
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-    _ = require('lodash');
+var mongoose    = require('mongoose'),
+    _           = require('lodash'),
+    async       = require('async'),
+    Q           = require('q');
 
 
+var runSlab = function(item, callback, fullList){
 
-var assignPriorities = function(slabs){
+    console.log('runSlab');
+    console.dir(item);
 
-    return slabs;
+    var run = function(slabObj){
+
+        switch(slabObj.type) {
+
+            case 'api' :
+                var slab = require('../slabs/api/'+slabObj.id+'/process/app.js');
+                slab.getData(slab.settings).then(function(data){
+                    slabObj.result = data;
+                    callback();
+                });
+                break;
+            case 'static' :
+                callback();
+                break;
+            case 'processing' :
+                callback();
+                break;
+            case 'output' :
+                callback();
+                break;
+        }
+
+    };
+
+    // run any dependency slabs before running this one - this works recursively.
+    if(item.dependencies.length > 0){
+        processSlabs(item.dependencies, fullList).then(function(){
+            run(item);
+        });
+    }else{
+        run(item);
+    }
+
+
 };
+
+var processSlabs = function(ids, fullList){
+
+    var deferred = Q.defer();
+
+    console.log('processSlabs');
+
+    // filters the fullList to only include the relevant IDs.
+    var slabsToProcess = _.filter(fullList, function(item){
+        var rtn = _.contains(ids, item.guid);
+        return rtn;
+    });
+
+    console.dir(slabsToProcess);
+
+    async.eachSeries(slabsToProcess, function(item, callback){
+        runSlab(item, callback, fullList);
+    }, function(err){
+        // if any of the file processing produced an error, err would equal that error
+        if( err ) {
+            // One of the iterations produced an error.
+            // All processing will now stop.
+            console.log('A file failed to process');
+            deferred.reject(err);
+        } else {
+            console.log('All files have been processed successfully');
+            deferred.resolve(fullList);
+        }
+    });
+
+    return deferred.promise;
+
+};
+
+
 
 /**
  * Create a Slab network
@@ -23,20 +97,20 @@ exports.create = function(req, res) {
 
     if(slabs.length > 0){
 
-        res.status(200);
+        // get only the output slabs
+        var outputSlabs = _.filter(slabs, function(item){ return item.type === 'output'; });
 
-        slabs = assignPriorities(slabs);
+        // returns an array of only the ids
+        var outputIDs   =_.pluck(outputSlabs, 'guid');
 
-        //_(slabs).sortBy('priority');
+        processSlabs(outputIDs, slabs).then(function(runSlabsList){
 
-        _.forEach(slabs, function(item){
-
-            console.log(item);
+            console.log('runSlabsList');
+            console.dir(runSlabsList);
+            res.status(200);
+            res.send({status:'success'});
 
         });
-
-        res.send({status:'success'});
-
 
     } else {
         res.status(400).send({
