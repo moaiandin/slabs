@@ -27,7 +27,7 @@ var redisClient;
 if (config.redis === 'LOCAL') {
 	redisClient = redis.createClient();
 }else{
-	var redisURL = url.parse(process.env.REDISCLOUD_URL);
+	var redisURL = url.parse(config.redis);
 	redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
 	redisClient.auth(redisURL.auth.split(':')[1]);
 }

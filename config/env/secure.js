@@ -2,7 +2,7 @@
 
 module.exports = {
 	port: 443,
-	redis : process.env.REDISCLOUD_URL || 'LOCAL',
+	redis : process.env.REDISCLOUD_URL,
 	db: process.env.MONGOHQ_URL || process.env.MONGOLAB_URI || 'mongodb://localhost/slabs',
 	assets: {
 		lib: {
