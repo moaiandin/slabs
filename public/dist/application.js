@@ -466,30 +466,34 @@ angular.module('stage').config(['$stateProvider',
 	}
 ]);
 
-/* global $:false, _:false, window:false, jsPlumb:false */
 'use strict';
 
 // todo - tests for this class.
-// todo - use controllerAs syntax with a vm var.
-// todo - move bindable members to the top : https://github.com/johnpapa/angularjs-styleguide#style-y033
-// todo - move jsPlumb to service or directive?
 
-angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce',
+angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce','Jsplumb',
 
-	function($scope, $state, SlabsServices, $sce ) {
+	function($scope, $state, SlabsServices, $sce, Jsplumb ) {
 
+		var vm = this;
+
+		// this sets the state and loads the sidebar into the stage view.
 		$state.go('stage.sidebar');
 
-		// initialize the slabs array.
-		$scope.slabs = [];
+		vm.slabs 								= [];
+		vm.iframeSrc 						= '';
+		vm.settingsPageVisible 	= false;
+		vm.runSlabNetwork 			= runSlabNetwork;
+		vm.openSlabSettings 		= openSlabSettings;
 
-		$scope.settingsPageVisible = false;
+		var jsPlumbInstance  		= Jsplumb.getInstance();
 
-		$scope.runSlabNetwork = function(){
+		////////////
+
+		function runSlabNetwork(){
 
 			var networkObject = {
 				title : 'sample network',
-				slabs : $scope.slabs
+				slabs : vm.slabs
 			};
 
 			console.log(networkObject);
@@ -502,29 +506,29 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 					console.log('network fail...');
 					console.log(resp);
 			});
-		};
 
-		$scope.openSlabSettings = function(slab){
+		}
+
+ 		// open the slab settings window.
+		function openSlabSettings(slab){
 
 			SlabsServices.slab.get({slabType:slab.type, slabID:slab.id}, function(obj){
 
 				if(obj.url){
-
-					$scope.settingsPageVisible = true;
-					$scope.iframeSrc = obj.url;
-
+					vm.settingsPageVisible = true;
+					vm.iframeSrc = obj.url;
 				}else{
 					console.log('error loading settings file');
 				}
 
 			});
 
-		};
+		}
 
 		// update the slabs array with the new connection.
-		var updateConnections = function(sourceId, targetId, remove){
+		function updateConnections(sourceId, targetId, remove){
 
-			_($scope.slabs).each(function(item){
+			_(vm.slabs).each(function(item){
 
 				if(item.guid === targetId){
 
@@ -539,9 +543,10 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 			});
 
-		};
+		}
 
-		var newConnection = function(connection) {
+		// new connection event handler
+		function newConnection(connection) {
 
 			// set the label
 			var targetName = $(connection.target).data('slab-name');
@@ -554,9 +559,10 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			console.log(sourceId+ ' is now connected to '+targetId );
 			updateConnections(sourceId, targetId);
 
-		};
+		}
 
-		var removeConnection = function(connection){
+		// dropped connection handler
+		function removeConnection(connection){
 
 			// update the slabs array to show the new connection
 			var targetId 	= connection.target.id;
@@ -564,84 +570,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			console.log(sourceId+ ' is now NOT connected to '+targetId );
 			updateConnections(sourceId, targetId, true);
 
-		};
-
-		var instance;
-		var _addEndpoints;
-
-		var initPlumb = function(){
-
-			instance = jsPlumb.getInstance({
-				// default drag options
-				DragOptions : { cursor: 'pointer', zIndex:2000 },
-				// the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text; in this
-				// case it returns the 'labelText' member that we set on each connection in the 'init' method below.
-				ConnectionOverlays : [
-					[ 'Label', {
-						location:0.1,
-						id:'label',
-						cssClass:'aLabel'
-					}]
-				],
-				Container:'stage-container'
-			});
-
-			var connectorPaintStyle = {
-				lineWidth:4,
-				strokeStyle:'#61B7CF',
-				joinstyle:'round',
-				outlineColor:'white',
-				outlineWidth:2
-			};
-			var connectorHoverStyle = {
-				lineWidth:4,
-				strokeStyle:'#216477',
-				outlineWidth:2,
-				outlineColor:'white'
-			};
-			var endpointHoverStyle = {
-				fillStyle:'#216477',
-				strokeStyle:'#216477'
-			};
-
-			var sourceEndpoint = {
-				endpoint:'Dot',
-				paintStyle:{
-					strokeStyle:'#7AB02C',
-					fillStyle:'transparent',
-					radius:4,
-					lineWidth:3
-				},
-				isSource:true,
-				connector:[ 'Flowchart', { stub:[40, 60], gap:10, cornerRadius:5, alwaysRespectStubs:true } ],
-				connectorStyle:connectorPaintStyle,
-				hoverPaintStyle:endpointHoverStyle,
-				connectorHoverStyle:connectorHoverStyle,
-				dragOptions:{}
-			};
-
-			// the definition of target endpoints (will appear when the user drags a connection)
-			var targetEndpoint = {
-					endpoint:'Dot',
-					paintStyle:{ strokeStyle:'#5bc0de',radius:4, fillStyle:'transparent',lineWidth:3 },
-					hoverPaintStyle:endpointHoverStyle,
-					maxConnections:-1,
-					dropOptions:{ hoverClass:'hover', activeClass:'active' },
-					isTarget:true
-				};
-
-			_addEndpoints = function(toId, sourceAnchors, targetAnchors) {
-				for (var i = 0; i < sourceAnchors.length; i++) {
-					var sourceUUID = toId + sourceAnchors[i];
-					instance.addEndpoint(toId, sourceEndpoint, { anchor:sourceAnchors[i], uuid:sourceUUID });
-				}
-				for (var j = 0; j < targetAnchors.length; j++) {
-					var targetUUID = toId + targetAnchors[j];
-					instance.addEndpoint(toId, targetEndpoint, { anchor:targetAnchors[j], uuid:targetUUID });
-				}
-			};
-
-		};
+		}
 
 
 		$('.stage').droppable({
@@ -676,7 +605,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				};
 
 				// add slab to slab network
-				$scope.slabs.push(slab);
+				vm.slabs.push(slab);
 				$scope.$digest();
 
 				// get number of connections in/out
@@ -689,31 +618,32 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				inConnectorsArray.length = slabsIn;
 				outConnectorsArray.length = slabsOut;
 
-				_addEndpoints(guid, outConnectorsArray, inConnectorsArray);
+				Jsplumb.addEndPoint(jsPlumbInstance, guid, outConnectorsArray, inConnectorsArray);
 
-				// listen for new connections; initialise them the same way we initialise the connections at startup.
-				instance.bind('connection', function(connInfo, originalEvent) {
+				// listen for new connections
+				jsPlumbInstance.bind('connection', function(connInfo, originalEvent) {
 					newConnection(connInfo.connection);
 				});
 
-				instance.bind('connectionDetached', function(connInfo, originalEvent) {
+				// listen for dropped connections
+				jsPlumbInstance.bind('connectionDetached', function(connInfo, originalEvent) {
 					removeConnection(connInfo.connection);
 				});
 
-				instance.draggable(jsPlumb.getSelector('.stage-container .panel'), { grid: [20, 20] });
+				// make slabs draggable
+				jsPlumbInstance.draggable(jsPlumb.getSelector('.stage-container .panel'), { grid: [20, 20] });
 
 			}
 
 		});
 
+
 		// add sumbit data function
 		window.submitSlabData = function(data){
-			$scope.settingsPageVisible = false;
+			vm.settingsPageVisible = false;
 			$scope.$digest();
 		};
 
-
-		initPlumb();
 
 	}
 
@@ -741,6 +671,99 @@ angular.module('stage').directive('slab', [
 				openSettings:'&'
 			}
 		};
+	}
+]);
+
+'use strict';
+
+angular.module('stage').factory('Jsplumb', [
+
+	function() {
+
+		var connectorPaintStyle = {
+			lineWidth:4,
+			strokeStyle:'#61B7CF',
+			joinstyle:'round',
+			outlineColor:'white',
+			outlineWidth:2
+		};
+
+		var connectorHoverStyle = {
+			lineWidth:4,
+			strokeStyle:'#216477',
+			outlineWidth:2,
+			outlineColor:'white'
+		};
+
+		var endpointHoverStyle = {
+			fillStyle:'#216477',
+			strokeStyle:'#216477'
+		};
+
+		var sourceEndpoint = {
+			endpoint:'Dot',
+			paintStyle:{
+				strokeStyle:'#7AB02C',
+				fillStyle:'transparent',
+				radius:4,
+				lineWidth:3
+			},
+			isSource:true,
+			connector:[ 'Flowchart', { stub:[40, 60], gap:10, cornerRadius:5, alwaysRespectStubs:true } ],
+			connectorStyle:connectorPaintStyle,
+			hoverPaintStyle:endpointHoverStyle,
+			connectorHoverStyle:connectorHoverStyle,
+			dragOptions:{}
+		};
+
+		// the definition of target endpoints (will appear when the user drags a connection)
+		var targetEndpoint = {
+			endpoint:'Dot',
+			paintStyle:{ strokeStyle:'#5bc0de',radius:4, fillStyle:'transparent',lineWidth:3 },
+			hoverPaintStyle:endpointHoverStyle,
+			maxConnections:-1,
+			dropOptions:{ hoverClass:'hover', activeClass:'active' },
+			isTarget:true
+		};
+
+
+		// Public API
+		return {
+
+			getInstance: function() {
+				return jsPlumb.getInstance({
+					// default drag options
+					DragOptions : { cursor: 'pointer', zIndex:2000 },
+					// the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text; in this
+					// case it returns the 'labelText' member that we set on each connection in the 'init' method below.
+					ConnectionOverlays : [
+						[ 'Label', {
+							location:0.1,
+							id:'label',
+							cssClass:'aLabel'
+						}]
+					],
+					Container:'stage-container'
+				});
+			},
+
+			addEndPoint: function(instance, toId, sourceAnchors, targetAnchors) {
+
+				for (var i = 0; i < sourceAnchors.length; i++) {
+					var sourceUUID = toId + sourceAnchors[i];
+					instance.addEndpoint(toId, sourceEndpoint, { anchor:sourceAnchors[i], uuid:sourceUUID });
+				}
+				for (var j = 0; j < targetAnchors.length; j++) {
+					var targetUUID = toId + targetAnchors[j];
+					instance.addEndpoint(toId, targetEndpoint, { anchor:targetAnchors[j], uuid:targetUUID });
+				}
+
+			}
+
+
+
+		};
+
 	}
 ]);
 
