@@ -41,6 +41,7 @@
     "passport-local": "~1.0.0",
     "passport-twitter": "~1.0.2",
     "q": "^1.1.2",
+    "redis": "^0.12.1",
     "swig": "~1.4.1"
   },
   "devDependencies": {

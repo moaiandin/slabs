@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
+	redis : 'LOCAL',
 	db: 'mongodb://localhost/slabs-test',
 	port: 3001,
 	app: {

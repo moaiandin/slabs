@@ -1,9 +1,9 @@
 'use strict';
 
-var slabs = require('../controllers/slab.server.controller.js');
-var slabNetwork = require('../controllers/slab-network.server.controller.js');
+module.exports = function(app, redisClient) {
 
-module.exports = function(app) {
+	var slabs 			= require('../controllers/slab.server.controller.js')(redisClient);
+	var slabNetwork = require('../controllers/slab-network.server.controller.js');
 
 	/* Slabs */
 	app.route('/network/')

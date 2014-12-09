@@ -2,10 +2,12 @@
 /**
  * Module dependencies.
  */
-var init = require('./config/init')(),
-	config = require('./config/config'),
-	mongoose = require('mongoose'),
-	chalk = require('chalk');
+var init 		= require('./config/init')(),
+	config 		= require('./config/config'),
+	mongoose 	= require('mongoose'),
+	chalk 		= require('chalk'),
+	redis 		= require('redis'),
+	url 			= require('url');
 
 /**
  * Main application entry file.
@@ -20,8 +22,18 @@ var db = mongoose.connect(config.db, function(err) {
 	}
 });
 
+// Setup redis client
+var redisClient;
+if (config.redis === 'LOCAL') {
+	redisClient = redis.createClient();
+}else{
+	var redisURL = url.parse(process.env.REDISCLOUD_URL);
+	redisClient = redis.createClient(redisURL.port, redisURL.hostname, {no_ready_check: true});
+	redisClient.auth(redisURL.auth.split(':')[1]);
+}
+
 // Init the express application
-var app = require('./config/express')(db);
+var app = require('./config/express')(db, redisClient);
 
 // Bootstrap passport config
 require('./config/passport')();

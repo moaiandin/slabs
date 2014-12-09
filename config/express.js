@@ -24,7 +24,7 @@ var fs = require('fs'),
 	path = require('path'),
   slabs = require('./slabs');
 
-module.exports = function(db) {
+module.exports = function(db, redisClient) {
 	// Initialize express app
 	var app = express();
 
@@ -118,7 +118,7 @@ module.exports = function(db) {
 
 	// Globbing routing files
 	config.getGlobbedFiles('./app/routes/**/*.js').forEach(function(routePath) {
-		require(path.resolve(routePath))(app);
+		require(path.resolve(routePath))(app, redisClient);
 	});
 
 	// Assume 'not found' in the error msgs is a 404. this is somewhat silly, but valid, you can do whatever you like, set properties, use instanceof etc.

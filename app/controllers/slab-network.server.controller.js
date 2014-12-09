@@ -8,15 +8,17 @@
 var mongoose    = require('mongoose'),
     _           = require('lodash'),
     async       = require('async'),
-    Q           = require('q');
-
+    Q           = require('q'),
+    redis       = require('redis'),
+    redisClient = redis.createClient();
 
 var runSlab = function(item, callback, fullList){
 
-    console.log('runSlab');
-    console.dir(item);
-
+    // run function for individual slabs
     var run = function(slabObj){
+
+        console.log('runningSlab');
+        console.dir(item);
 
         switch(slabObj.type) {
 
@@ -34,8 +36,13 @@ var runSlab = function(item, callback, fullList){
                 callback();
                 break;
             case 'output' :
-                // todo - pass the results of the dependencies to the output
-                // and then display.
+
+                // todo - save the data from the dependency to the database and
+                // todo - provide an id to the .result property which is then passed
+                // todo - to the output display page.
+
+
+
                 callback();
                 break;
         }
@@ -56,9 +63,9 @@ var runSlab = function(item, callback, fullList){
 
 var processSlabs = function(ids, fullList){
 
-    var deferred = Q.defer();
+    //console.log('processSlabs');
 
-    console.log('processSlabs');
+    var deferred = Q.defer();
 
     // filters the fullList to only include the relevant IDs.
     var slabsToProcess = _.filter(fullList, function(item){
@@ -66,7 +73,7 @@ var processSlabs = function(ids, fullList){
         return rtn;
     });
 
-    console.dir(slabsToProcess);
+    //console.dir(slabsToProcess);
 
     async.eachSeries(slabsToProcess, function(item, callback){
         runSlab(item, callback, fullList);
@@ -78,7 +85,7 @@ var processSlabs = function(ids, fullList){
             console.log('A file failed to process');
             deferred.reject(err);
         } else {
-            console.log('All files have been processed successfully');
+            //console.log('All files have been processed successfully');
             deferred.resolve(fullList);
         }
     });

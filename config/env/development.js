@@ -1,6 +1,7 @@
 'use strict';
 
 module.exports = {
+	redis : 'LOCAL',
 	db: 'mongodb://localhost/slabs-dev',
 	app: {
 		title: 'slabs - Development Environment'
