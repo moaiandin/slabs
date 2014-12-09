@@ -5,6 +5,7 @@ env:
   - NODE_ENV=travis
 services:
   - mongodb
+  - redis
 before_script:
   - mkdir -p shippable/testresults
   - mkdir -p shippable/codecoverage
