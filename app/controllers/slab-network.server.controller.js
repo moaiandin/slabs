@@ -9,8 +9,7 @@ var mongoose    = require('mongoose'),
     _           = require('lodash'),
     async       = require('async'),
     Q           = require('q'),
-    redis       = require('redis'),
-    redisClient = redis.createClient();
+    redis       = require('redis');
 
 var runSlab = function(item, callback, fullList){
 
