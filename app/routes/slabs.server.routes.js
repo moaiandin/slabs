@@ -3,7 +3,7 @@
 module.exports = function(app, redisClient) {
 
 	var slabs 			= require('../controllers/slab.server.controller.js')(redisClient);
-	var slabNetwork = require('../controllers/slab-network.server.controller.js');
+	var slabNetwork = require('../controllers/slab-network.server.controller.js')(redisClient);
 
 	/* Slabs */
 	app.route('/network/')

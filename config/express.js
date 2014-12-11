@@ -116,6 +116,11 @@ module.exports = function(db, redisClient) {
 
 	slabs.addSlabsFiles(app);
 
+	// add global error handling on the redis client
+	redisClient.on('error', function (err) {
+		console.log('Error ' + err);
+	});
+
 	// Globbing routing files
 	config.getGlobbedFiles('./app/routes/**/*.js').forEach(function(routePath) {
 		require(path.resolve(routePath))(app, redisClient);
