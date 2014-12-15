@@ -16,6 +16,7 @@ module.exports = function(redisClient) {
 
     var exports = {};
 
+
     var runSlab = function(item, callback, fullList){
 
         // run function for individual slabs
@@ -27,11 +28,17 @@ module.exports = function(redisClient) {
             switch(slabObj.type) {
 
                 case 'api' :
-                    var slab = require('../slabs/api/'+slabObj.id+'/process/app.js');
-                    slab.getData(slab.settings).then(function(data){
-                        slabObj.result = data;
+                    try{
+                        var slab = require('../slabs/api/'+slabObj.id+'/process/app.js');
+                        slab.getData(slab.settings).then(function(data){
+                            slabObj.result = data;
+                            callback();
+                        });
+                    }catch(err){
+                        slabObj.error = true;
+                        slabObj.result = err;
                         callback();
-                    });
+                    }
                     break;
                 case 'static' :
                     callback();
@@ -41,17 +48,32 @@ module.exports = function(redisClient) {
                     break;
                 case 'output' :
 
-                    // todo - save the data from the dependency to the database and
-                    // todo - provide an id to the .result property which is then passed
-                    // todo - to the output display page.
+                    var dependencyData = _.findWhere(fullList, { guid:slabObj.dependencies[0] });
 
-                    var outputDependencyData = {title:'chump town', data:['elliot','is', {name:'god'}]};
+                    var outputDependencyData = {
+                        title:slabObj.settings.title,
+                        settings:slabObj.settings,
+                        data:dependencyData.result
+                    };
                     var outputData = new SlabOutput(outputDependencyData);
-                    outputData.save(function(err) {
-                        console.log(err);
+                    outputData.save(function(err, doc) {
+
+                        if(err){
+                            console.log(err);
+                            slabObj.error = true;
+                            slabObj.result = err;
+                            callback();
+                            return;
+                        }
+
+                        // create a url from the slab data and the id of the saved dependency data
+                        var outputUrl = '/slab-files/output/'+slabObj.id+'/output/?id='+doc._id;
+                        slabObj.result = outputUrl;
+                        callback();
+
                     });
 
-                    callback();
+
                     break;
             }
 
@@ -100,8 +122,6 @@ module.exports = function(redisClient) {
     };
 
 
-
-
     /**
      * Create a Slab network
      */
@@ -124,8 +144,14 @@ module.exports = function(redisClient) {
 
                 console.log('runSlabsList');
                 console.dir(runSlabsList);
+
+                var outputSlabs = _.where(runSlabsList, { type:'output' });
+
                 res.status(200);
-                res.send({status: 'success'});
+                res.send({
+                    status: 'success',
+                    outputs:outputSlabs
+                });
 
             });
 

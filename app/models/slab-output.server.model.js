@@ -20,9 +20,13 @@ var SlabOutputSchema = new Schema({
 		trim: true,
 		required: 'Title cannot be blank'
 	},
+	settings:{
+		type:Schema.Types.Mixed,
+		default: {}
+	},
 	data:{
-		type:[Schema.Types.Mixed],
-		default: []
+		type:Schema.Types.Mixed,
+		default: {}
 	}
 });
 

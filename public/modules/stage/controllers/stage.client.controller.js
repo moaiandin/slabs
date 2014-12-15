@@ -21,6 +21,14 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		////////////
 
+		function openOutputTabs(outputs){
+			console.log(outputs);
+			_.each(outputs, function(output){
+				console.log(output);
+				window.open(output.result);
+			});
+		}
+
 		function runSlabNetwork(){
 
 			var networkObject = {
@@ -34,6 +42,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				function(resp){
 				  console.log('network success!!');
 					console.log(resp);
+					openOutputTabs(resp.outputs);
 			},function(resp){
 					console.log('network fail...');
 					console.log(resp);
@@ -132,7 +141,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 					name					:slabName,
 					left					:left,
 					top						:top,
-					settings			:{setting:'test setting', setting2:'test setting'},
+					settings			:{title:'this is the title', setting:'test setting', setting2:'test setting'},
 					dependencies 	:[]
 				};
 
@@ -170,7 +179,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		});
 
 
-		// add sumbit data function
+		// add submit data function
 		window.submitSlabData = function(data){
 			vm.settingsPageVisible = false;
 			$scope.$digest();

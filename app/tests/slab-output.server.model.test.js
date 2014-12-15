@@ -11,30 +11,23 @@ var should = require('should'),
 /**
  * Globals
  */
-var user, slabOutput;
+var slabOutput;
 
 /**
  * Unit tests
  */
 describe('Slab output Model Unit Tests:', function() {
+
 	beforeEach(function(done) {
-		user = new User({
-			firstName: 'Full',
-			lastName: 'Name',
-			displayName: 'Full Name',
-			email: 'test@test.com',
-			username: 'username',
-			password: 'password'
+
+		slabOutput = new SlabOutput({
+			title : 'test slab output',
+			settings : { prop : 'test property'},
+			data : { prop : 'test property'}
 		});
 
-		user.save(function() { 
-			slabOutput = new SlabOutput({
-				// Add model fields
-				// ...
-			});
+		done();
 
-			done();
-		});
 	});
 
 	describe('Method Save', function() {
@@ -48,8 +41,7 @@ describe('Slab output Model Unit Tests:', function() {
 
 	afterEach(function(done) { 
 		SlabOutput.remove().exec();
-		User.remove().exec();
-
 		done();
 	});
+
 });
