@@ -6,4 +6,4 @@ It enables drag & drop functionality for creating, processing and then displayin
 
 Slabs is an open-source project - you can submit pull requests for the main git repo.
 
-The power of slabs however comes from the list of 'slabs'. These are submitted by users and then available for anyone to use in thier own slab networks.
+The power of slabs however comes from the external modules it consumes. These are submitted by users and then available for anyone to use in thier own slab networks. There are 3 main types of slab, 'sources', 'processors' and 'outputs'. 
