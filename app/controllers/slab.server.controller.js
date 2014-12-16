@@ -39,34 +39,22 @@ module.exports = function(redisClient) {
     exports.slabList = function (req, res) {
 
         /* TESTING LISTS */
-        var apiSlabList = [{name: 'twitter api', id: 'twitter', type: 'api', in: 0, out: 3}, {
-            name: 'facebook',
-            id: 'facebook',
-            type: 'api',
-            in: 0,
-            out: 3
-        }];
-        var staticDataList = [{
-            name: 'argos sales',
-            id: 'argos',
-            type: 'static',
-            in: 0,
-            out: 3
-        }, {name: 'government spending', id: 'government', type: 'static', in: 0, out: 3}];
-        var processingSlabList = [{
-            name: 'data smasher',
-            id: 'data-smasher',
-            type: 'processing',
-            in: 3,
-            out: 1
-        }, {name: 'correlator', id: 'correlator', type: 'processing', in: 3, out: 1}];
-        var outputSlabList = [{name: 'bar chart', id: 'bar', type: 'output', in: 1, out: 0}, {
-            name: 'pie chart',
-            id: 'pie',
-            type: 'output',
-            in: 1,
-            out: 0
-        }];
+        var apiSlabList = [
+            { name: 'twitter api', id: 'twitter', type: 'api', in: 0, out: 3},
+            { name: 'facebook', id: 'facebook', type: 'api', in: 0, out: 3}
+        ];
+        var staticDataList = [
+            { name: 'argos sales', id: 'argos', type: 'static', in: 0, out: 3},
+            { name: 'government spending', id: 'government', type: 'static', in: 0, out: 3}
+        ];
+        var processingSlabList = [
+            { name: 'data smasher', id: 'data-smasher', type: 'processing', in: 3, out: 1},
+            { name: 'correlator', id: 'correlator', type: 'processing', in: 3, out: 1}
+        ];
+        var outputSlabList = [
+            { name: 'bar chart', id: 'bar', type: 'output', in: 1, out: 0},
+            { name: 'pie chart', id: 'pie', type: 'output', in: 1, out: 0}
+        ];
 
         var slabType = req.params.slabType;
 

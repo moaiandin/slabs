@@ -16,7 +16,6 @@ module.exports = function(redisClient) {
 
     var exports = {};
 
-
     var runSlab = function(item, callback, fullList){
 
         // run function for individual slabs
@@ -162,6 +161,30 @@ module.exports = function(redisClient) {
         }
 
     };
+
+    /**
+     * Get data from an export slab and send to ato an dis
+     */
+    exports.getOutputData = function(req, res) {
+
+        var outputId = req.params.outputid;
+        SlabOutput.findById(outputId, function(err, doc){
+            console.log(doc);
+
+            if(err){
+                res.status(400).send({
+                    message: 'invalid id sent - can\'t find a saved slab output'
+                });
+            }else{
+
+                res.status(200);
+                res.send(doc);
+
+            }
+        });
+
+    };
+
 
     /**
      * Show the current Slab network

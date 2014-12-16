@@ -5,6 +5,13 @@ module.exports = function(app, redisClient) {
 	var slabs 			= require('../controllers/slab.server.controller.js')(redisClient);
 	var slabNetwork = require('../controllers/slab-network.server.controller.js')(redisClient);
 
+	// todo - not sure if some of these slabs should have there own controllers
+	// todo - at the moment there are only 'network' and 'slab' controllers.
+
+	/* Data For An Output Slab */
+	app.route('/getdata/:outputid')
+		.get(slabNetwork.getOutputData);
+
 	/* Slabs */
 	app.route('/network/')
 		.post(slabNetwork.create);
