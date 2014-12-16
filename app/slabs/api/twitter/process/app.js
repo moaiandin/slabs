@@ -8,6 +8,9 @@ var Q = require('q');
  */
 exports.getData = function(config) {
 
+    // this is the object saved from your the /input portion of the slab.
+    console.log(config);
+
     var deferred = Q.defer();
 
     var sampleData = {

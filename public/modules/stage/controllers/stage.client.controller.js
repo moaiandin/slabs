@@ -1,5 +1,9 @@
 'use strict';
 
+// todo - submitSlabData needs to save the settings to the slab object.
+// todo - validate slab network before submitting.
+// todo - show a window with the output links on it.
+// todo - handle errors when creating a slab network.
 // todo - tests for this class.
 
 angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce','Jsplumb',
@@ -36,7 +40,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				slabs : vm.slabs
 			};
 
-			console.log(networkObject);
+			//console.log(networkObject);
 
 			SlabsServices.network.save({}, networkObject,
 				function(resp){
@@ -181,6 +185,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		// add submit data function
 		window.submitSlabData = function(data){
+
 			vm.settingsPageVisible = false;
 			$scope.$digest();
 		};

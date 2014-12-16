@@ -1,5 +1,11 @@
 'use strict';
 
+// todo - write a grunt module that basically checks out a list of grunt repos in slabs.json and puts them
+// todo - into a folders - it uses the property names to create the folder structure.
+// todo - Then add this grunt task to the shippable.yml so the slabs are available online.
+
+// todo - the slabList function needs to scan the slabs.json file to return which slabs are available.
+
 /**
  * Module dependencies.
  */
