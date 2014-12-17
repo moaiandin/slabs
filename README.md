@@ -11,7 +11,7 @@ The power of slabs however comes from the external modules it consumes. These ar
 The spec for the input & output of slab objects currently looks like this :
 
 
- ```json
+ ```javascript
 var sampleData = {
 
 	dateFrom    : '1416654884000',
