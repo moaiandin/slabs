@@ -1,9 +1,18 @@
 {
-  "api": {
-  },
-  "processing": {
-  },
-  "output": {
-    "simple-pie" : "https://github.com/slabs-io/output-slab-demo"
+  "app" : {
+    "slabs" : {
+      "api" : {
+
+      },
+      "output" : {
+        "pie" : "git@github.com:slabs-io/output-slab-demo.git"
+      },
+      "processing" : {
+
+      },
+      "static" : {
+
+      }
+    }
   }
 }

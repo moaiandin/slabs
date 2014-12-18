@@ -139,6 +139,13 @@ module.exports = function(grunt) {
 			unit: {
 				configFile: 'karma.conf.js'
 			}
+		},
+		batch_git_clone: {
+			slabs: {
+				options: {
+					configFile: 'slabs.json'
+				}
+			}
 		}
 	});
 
@@ -156,6 +163,9 @@ module.exports = function(grunt) {
 		grunt.config.set('applicationJavaScriptFiles', config.assets.js);
 		grunt.config.set('applicationCSSFiles', config.assets.css);
 	});
+
+	// Setup task
+	grunt.registerTask('setup', ['batch_git_clone'])
 
 	// Default task(s).
 	grunt.registerTask('default', ['lint', 'concurrent:default']);

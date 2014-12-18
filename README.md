@@ -31,3 +31,16 @@ var sampleData = {
  ```
 
 During initial development this spec is likely to change frequently.
+
+##
+Setup Steps :
+
+```
+npm install
+
+bower install
+
+grunt setup
+```
+
+
