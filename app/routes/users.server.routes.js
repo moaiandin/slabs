@@ -31,9 +31,9 @@ module.exports = function(app) {
 	}));
 	app.route('/auth/facebook/callback').get(users.oauthCallback('facebook'));
 
-	// Setting the twitter oauth routes
-	app.route('/auth/twitter').get(passport.authenticate('twitter'));
-	app.route('/auth/twitter/callback').get(users.oauthCallback('twitter'));
+	// Setting the sample oauth routes
+	app.route('/auth/sample').get(passport.authenticate('twitter'));
+	app.route('/auth/sample/callback').get(users.oauthCallback('twitter'));
 
 	// Setting the google oauth routes
 	app.route('/auth/google').get(passport.authenticate('google', {

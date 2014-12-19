@@ -29,7 +29,7 @@ module.exports = function(redisClient) {
                 case 'api' :
                     try{
                         var slab = require('../slabs/api/'+slabObj.id+'/process/app.js');
-                        slab.getData(slab.settings).then(function(data){
+                        slab.getData(slabObj.settings || {}).then(function(data){
                             slabObj.result = data;
                             callback();
                         });
@@ -50,7 +50,6 @@ module.exports = function(redisClient) {
                     var dependencyData = _.findWhere(fullList, { guid:slabObj.dependencies[0] });
 
                     var outputDependencyData = {
-                        title:slabObj.settings.title,
                         settings:slabObj.settings,
                         data:dependencyData.result
                     };
@@ -126,7 +125,6 @@ module.exports = function(redisClient) {
      */
     exports.create = function (req, res) {
 
-        var title = req.body.title;
         var slabs = req.body.slabs;
 
         if (slabs.length > 0) {

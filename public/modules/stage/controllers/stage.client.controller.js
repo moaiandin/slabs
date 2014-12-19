@@ -17,6 +17,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		vm.slabs 								= [];
 		vm.iframeSrc 						= '';
+		vm.currentlyOpenSlab		= '';
 		vm.settingsPageVisible 	= false;
 		vm.runSlabNetwork 			= runSlabNetwork;
 		vm.openSlabSettings 		= openSlabSettings;
@@ -60,6 +61,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			SlabsServices.slab.get({slabType:slab.type, slabID:slab.id}, function(obj){
 
 				if(obj.url){
+					vm.currentlyOpenSlab = slab.guid;
 					vm.settingsPageVisible = true;
 					vm.iframeSrc = obj.url;
 				}else{
@@ -117,6 +119,14 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		}
 
+		function addSettingsToSlabList (data){
+
+			var slab = _.findWhere(vm.slabs, { guid:vm.currentlyOpenSlab } );
+			slab.settings = data;
+
+			console.dir(vm.slabs);
+
+		}
 
 		$('.stage').droppable({
 
@@ -145,7 +155,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 					name					:slabName,
 					left					:left,
 					top						:top,
-					settings			:{title:'this is the title', setting:'test setting', setting2:'test setting'},
+					settings			:{},
 					dependencies 	:[]
 				};
 
@@ -185,6 +195,8 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		// add submit data function
 		window.submitSlabData = function(data){
+
+			addSettingsToSlabList(data);
 
 			vm.settingsPageVisible = false;
 			$scope.$digest();

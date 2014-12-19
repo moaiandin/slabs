@@ -10,7 +10,7 @@ var passport = require('passport'),
 	users = require('../../app/controllers/users.server.controller');
 
 module.exports = function() {
-	// Use twitter strategy
+	// Use sample strategy
 	passport.use(new TwitterStrategy({
 			consumerKey: config.twitter.clientID,
 			consumerSecret: config.twitter.clientSecret,

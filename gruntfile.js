@@ -53,7 +53,8 @@ module.exports = function(grunt) {
 			all: {
 				src: watchFiles.clientJS.concat(watchFiles.serverJS),
 				options: {
-					jshintrc: true
+					jshintrc: true,
+					ignores: ['app/slabs/**/*', 'app/slabs/*']
 				}
 			}
 		},
@@ -165,7 +166,7 @@ module.exports = function(grunt) {
 	});
 
 	// Setup task
-	grunt.registerTask('setup', ['batch_git_clone'])
+	grunt.registerTask('setup', ['batch_git_clone']);
 
 	// Default task(s).
 	grunt.registerTask('default', ['lint', 'concurrent:default']);

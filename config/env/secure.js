@@ -34,7 +34,7 @@ module.exports = {
 	twitter: {
 		clientID: process.env.TWITTER_KEY || 'CONSUMER_KEY',
 		clientSecret: process.env.TWITTER_SECRET || 'CONSUMER_SECRET',
-		callbackURL: 'https://localhost:443/auth/twitter/callback'
+		callbackURL: 'https://localhost:443/auth/sample/callback'
 	},
 	google: {
 		clientID: process.env.GOOGLE_ID || 'APP_ID',

@@ -14,12 +14,6 @@ var SlabOutputSchema = new Schema({
 		type: Date,
 		default: Date.now
 	},
-	title: {
-		type: String,
-		default: '',
-		trim: true,
-		required: 'Title cannot be blank'
-	},
 	settings:{
 		type:Schema.Types.Mixed,
 		default: {}
