@@ -10,7 +10,6 @@ before_script:
   - mkdir -p shippable/testresults
   - mkdir -p shippable/codecoverage
 script:
-  - grunt setup
   - grunt test
 after_success:
     - git push git@heroku.com:slabs.git master
