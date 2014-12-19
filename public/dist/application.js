@@ -468,7 +468,6 @@ angular.module('stage').config(['$stateProvider',
 
 'use strict';
 
-// todo - submitSlabData needs to save the settings to the slab object.
 // todo - validate slab network before submitting.
 // todo - show a window with the output links on it.
 // todo - handle errors when creating a slab network.
