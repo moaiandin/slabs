@@ -2,10 +2,10 @@
   "app" : {
     "slabs" : {
       "api" : {
-        "sample" : "git@github.com:slabs-io/api-slab-demo.git"
+        "sample" : "https://github.com/slabs-io/api-slab-demo.git"
       },
       "output" : {
-        "sample" : "git@github.com:slabs-io/output-slab-demo.git"
+        "sample" : "https://github.com/slabs-io/output-slab-demo.git"
       },
       "processing" : {
       },
