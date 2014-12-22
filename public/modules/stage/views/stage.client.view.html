@@ -2,7 +2,10 @@
 
 	<div class="stage full-height">
 
-		<btn class="run btn btn-success btn-med" data-ng-click="stageController.runSlabNetwork()">Run Slab Network</btn>
+		<div class="run">
+			<btn class="btn btn-success btn-med" data-ng-click="stageController.runSlabNetwork()">Run Slab Network</btn>
+			<btn class="output btn btn-success btn-med" data-ng-show="stageController.outputs" data-ng-click="stageController.viewOutput()">View Output</btn>
+		</div>
 
 		<div id="stage-container" class="stage-container stageWrapper" data-ng-class="{darken:stageController.settingsPageVisible}">
 

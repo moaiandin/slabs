@@ -14,12 +14,14 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		// this sets the state and loads the sidebar into the stage view.
 		$state.go('stage.sidebar');
 
-		vm.slabs 								= [];
-		vm.iframeSrc 						= '';
+		vm.slabs 					= [];
+		vm.iframeSrc 				= '';
 		vm.currentlyOpenSlab		= '';
-		vm.settingsPageVisible 	= false;
+		vm.settingsPageVisible 		= false;
 		vm.runSlabNetwork 			= runSlabNetwork;
 		vm.openSlabSettings 		= openSlabSettings;
+		vm.viewOutput 				= viewOutput;
+		vm.outputs = null;
 
 		var jsPlumbInstance  		= Jsplumb.getInstance();
 
@@ -46,12 +48,17 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				function(resp){
 				  console.log('network success!!');
 					console.log(resp);
-					openOutputTabs(resp.outputs);
+					vm.outputs = resp.outputs;
+
 			},function(resp){
 					console.log('network fail...');
 					console.log(resp);
 			});
 
+		}
+
+		function viewOutput(){
+			openOutputTabs(vm.outputs);
 		}
 
  		// open the slab settings window.
