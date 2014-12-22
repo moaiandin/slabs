@@ -36,7 +36,7 @@ module.exports = function(redisClient) {
                         var slab = {
                             name: conf.name,
                             id: slabID,
-                            type: conf.type,
+                            type: type,
                             in : conf.connectionsIn,
                             out : conf.connectionsOut
                         };
@@ -61,13 +61,15 @@ module.exports = function(redisClient) {
      */
     exports.types = function (req, res) {
 
-        /* HARDCODED SLAB TYPES */
-        var slabTypes = [
-            {id: 'api', label: 'api\'s'},
-            {id: 'static', label: 'static data'},
-            {id: 'processing', label: 'data processors'},
-            {id: 'output', label: 'data output'}
-        ];
+        var slabTypes = [];
+        var slabList = slabsConfig.app.slabs;
+        for(var prop in slabList){
+            var slabType = {
+                id:prop,
+                label:prop
+            };
+            slabTypes.push(slabType);
+        }
 
         res.status(200);
         res.json(slabTypes);
