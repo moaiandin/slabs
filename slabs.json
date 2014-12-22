@@ -4,12 +4,12 @@
       "api" : {
         "sample" : "https://github.com/slabs-io/api-slab-demo.git"
       },
-      "output" : {
-        "sample" : "https://github.com/slabs-io/output-slab-demo.git"
-      },
       "processing" : {
       },
       "static" : {
+      },
+      "output" : {
+        "sample" : "https://github.com/slabs-io/output-slab-demo.git"
       }
     }
   }

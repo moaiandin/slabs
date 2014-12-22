@@ -1,9 +1,5 @@
 'use strict';
 
-// todo - write a grunt module that basically checks out a list of grunt repos in slabs.json and puts them
-// todo - into a folders - it uses the property names to create the folder structure.
-// todo - Then add this grunt task to the shippable.yml so the slabs are available online.
-
 // todo - the slabList function needs to scan the slabs.json file to return which slabs are available.
 
 /**
@@ -14,25 +10,66 @@ var mongoose     = require('mongoose'),
     swig         = require('swig'),
     path         = require('path'),
     errorHandler = require('./errors.server.controller'),
-    redis        = require('redis');
+    redis        = require('redis'),
+    slabsConfig  = require('../../slabs.json');
 
 
 module.exports = function(redisClient) {
 
     var exports = {};
 
+    // loops over the slabs.json file and returns lists of slabs by type
+    function getSlabList(type){
+
+        var slabs = [];
+
+        var slabList = slabsConfig.app.slabs;
+
+        for(var prop in slabList){
+
+            if(prop === type){
+
+                for(var slabID in slabList[prop]){
+
+                    try{
+                        var conf = require('../slabs/'+type+'/'+slabID+'/slabs-config.json');
+                        var slab = {
+                            name: conf.name,
+                            id: slabID,
+                            type: type,
+                            in : conf.connectionsIn,
+                            out : conf.connectionsOut
+                        };
+                        slabs.push(slab);
+                    }catch(err){
+                        console.log('Error reading slabs-config.json from :'+slabID+' in'+type);
+                        console.log(err);
+                    }
+
+                }
+
+            }
+
+        }
+
+        return slabs;
+
+    }
+
     /**
      * Get the lists of slab types
      */
     exports.types = function (req, res) {
 
-        /* HARDCODED SLAB TYPES */
-        var slabTypes = [
-            {id: 'api', label: 'api\'s'},
-            {id: 'static', label: 'static data'},
-            {id: 'processing', label: 'data processors'},
-            {id: 'output', label: 'data output'}
-        ];
+        var slabTypes = [];
+        var slabList = slabsConfig.app.slabs;
+        for(var prop in slabList){
+            var slabType = {
+                id:prop,
+                label:prop
+            };
+            slabTypes.push(slabType);
+        }
 
         res.status(200);
         res.json(slabTypes);
@@ -44,42 +81,8 @@ module.exports = function(redisClient) {
      */
     exports.slabList = function (req, res) {
 
-        /* TESTING LISTS */
-        var apiSlabList = [
-            { name: 'sample api', id: 'sample', type: 'api', in: 0, out: 3},
-        ];
-        var staticDataList = [
-        ];
-        var processingSlabList = [
-        ];
-        var outputSlabList = [
-            { name: 'sample chart', id: 'sample', type: 'output', in: 1, out: 0}
-        ];
-
         var slabType = req.params.slabType;
-
-        var slabList;
-
-        switch (slabType) {
-            case 'api' :
-                slabList = apiSlabList;
-                break;
-            case 'static' :
-                slabList = staticDataList;
-                break;
-            case 'processing' :
-                slabList = processingSlabList;
-                break;
-            case 'output' :
-                slabList = outputSlabList;
-                break;
-            default :
-                res.status(400).send({
-                    message: 'no slab type "' + slabType + '" found...'
-                });
-                return;
-        }
-
+        var slabList = getSlabList(slabType);
         res.status(200);
         res.json(slabList);
 
