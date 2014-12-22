@@ -27,7 +27,7 @@
     "forever": "~0.11.0",
     "glob": "~4.0.5",
     "grunt": "^0.4.5",
-    "grunt-batch-git-clone": "^0.1.1",
+    "grunt-batch-git-clone": "^0.1.2",
     "grunt-cli": "~0.1.13",
     "grunt-concurrent": "~1.0.0",
     "grunt-contrib-csslint": "^0.3.1",
