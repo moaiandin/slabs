@@ -8,7 +8,8 @@ module.exports = function(grunt) {
 		clientViews: ['public/modules/**/views/**/*.html'],
 		clientJS: ['public/js/*.js', 'public/modules/**/*.js'],
 		clientCSS: ['public/modules/**/*.css'],
-		mochaTests: ['app/tests/**/*.js']
+		mochaTests: ['app/tests/**/*.js'],
+		slabsLib:['public/slabs.io.js/**.js', 'public/libs/qwest/src/qwest.js']
 	};
 
 	// Project Configuration
@@ -72,7 +73,8 @@ module.exports = function(grunt) {
 					mangle: false
 				},
 				files: {
-					'public/dist/application.min.js': 'public/dist/application.js'
+					'public/dist/application.min.js': 'public/dist/application.js',
+					'public/dist/slabs.io.js': watchFiles.slabsLib
 				}
 			}
 		},
