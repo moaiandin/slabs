@@ -47,3 +47,8 @@ This will pull all your NPM modules, bower modules and all the external slabs li
 grunt
 ```
 And then navigate to http://localhost:3000/ in your browser.
+
+## Development
+The project uses MEANJS, so to add modules on the front or the backend you can use yeoman commands. More info can be found <a href="http://meanjs.org/generator.html">here</a>.
+
+On the front end please try and follow the <a href="https://github.com/johnpapa/angularjs-styleguide">john-papa angular style guide</a>
