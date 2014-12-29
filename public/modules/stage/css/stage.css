@@ -25,6 +25,10 @@
 
 .stageWrapper .slab {
     position:absolute;
+    width:180px
+}
+.stageWrapper .slab .removeBtn{
+    margin-right:5px
 }
 
 .stage .run {

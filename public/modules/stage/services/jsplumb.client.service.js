@@ -71,7 +71,32 @@ angular.module('stage').factory('Jsplumb', [
 				});
 			},
 
-			addEndPoint: function(instance, toId, sourceAnchors, targetAnchors) {
+			getInConnectors: function (){
+				var inConnectorsArray 		= ['TopCenter', 'TopLeft', 'TopRight'];
+				return inConnectorsArray;
+			},
+
+			getOutConnectors: function (){
+				var outConnectorsArray 		= ['BottomCenter', 'BottomLeft', 'BottomRight'];
+				return outConnectorsArray;
+			},
+
+			removeEndPoints: function(instance, endpointId, sourceAnchors, targetAnchors){
+
+				for (var i = 0; i < sourceAnchors.length; i++) {
+					var sourceUUID = endpointId + sourceAnchors[i];
+					instance.deleteEndpoint(sourceUUID);
+				}
+				for (var j = 0; j < targetAnchors.length; j++) {
+					var targetUUID = endpointId + targetAnchors[j];
+					instance.deleteEndpoint(targetUUID);
+				}
+
+				instance.detachAllConnections(endpointId);
+
+			},
+
+			addEndPoints: function(instance, toId, sourceAnchors, targetAnchors) {
 
 				for (var i = 0; i < sourceAnchors.length; i++) {
 					var sourceUUID = toId + sourceAnchors[i];

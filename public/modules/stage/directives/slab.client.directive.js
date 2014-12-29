@@ -17,7 +17,8 @@ angular.module('stage').directive('slab', [
 				top:'=',
 				in:'=',
 				out:'=',
-				openSettings:'&'
+				openSettings:'&',
+				removeClicked:'&'
 			}
 		};
 	}

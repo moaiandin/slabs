@@ -1,8 +1,5 @@
 'use strict';
 
-// todo - validate slab network before submitting.
-// todo - show a window with the output links on it.
-// todo - handle errors when creating a slab network.
 // todo - tests for this class.
 
 angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce','Jsplumb',
@@ -14,18 +11,21 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		// this sets the state and loads the sidebar into the stage view.
 		$state.go('stage.sidebar');
 
-		vm.slabs 					= [];
-		vm.iframeSrc 				= '';
-		vm.currentlyOpenSlab		= '';
+		vm.slabs 									= [];
+		vm.iframeSrc 							= '';
+		vm.currentlyOpenSlab			= '';
 		vm.settingsPageVisible 		= false;
-		vm.runSlabNetwork 			= runSlabNetwork;
-		vm.openSlabSettings 		= openSlabSettings;
-		vm.viewOutput 				= viewOutput;
-		vm.outputs = null;
+		vm.runSlabNetwork 				= runSlabNetwork;
+		vm.openSlabSettings 			= openSlabSettings;
+		vm.viewOutput 						= viewOutput;
+		vm.outputs 								= null;
+		vm.removeSlab							= removeSlab;
 
-		var jsPlumbInstance  		= Jsplumb.getInstance();
+		var jsPlumbInstance  			= Jsplumb.getInstance();
+
 
 		////////////
+
 
 		function openOutputTabs(outputs){
 			console.log(outputs);
@@ -35,7 +35,27 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			});
 		}
 
+		function validateNetwork(){
+
+			var valid = true;
+
+			// check that all outputs are connected to a source
+			_(vm.slabs).each(function(item){
+
+
+
+			});
+
+
+			return valid;
+
+		}
+
 		function runSlabNetwork(){
+
+			if(validateNetwork() === false){
+				return;
+			}
 
 			var networkObject = {
 				title : 'sample network',
@@ -74,6 +94,20 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 					console.log('error loading settings file');
 				}
 
+			});
+
+		}
+
+		// remove a slab from the stage
+		function removeSlab(slab){
+
+			var inConnectorsArray 		= Jsplumb.getInConnectors();
+			var outConnectorsArray		= Jsplumb.getOutConnectors();
+
+			Jsplumb.removeEndPoints(jsPlumbInstance, slab.guid, outConnectorsArray, inConnectorsArray);
+
+			vm.slabs = _.reject(vm.slabs, function(item){
+				return item.guid === slab.guid;
 			});
 
 		}
@@ -173,13 +207,13 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				var slabsIn		= item.getAttribute('data-slab-in');
 				var slabsOut  = item.getAttribute('data-slab-out');
 
-				var inConnectorsArray = ['TopCenter', 'TopLeft', 'TopRight'];
-				var outConnectorsArray = ['BottomCenter', 'BottomLeft', 'BottomRight'];
+				var inConnectorsArray 		= Jsplumb.getInConnectors();
+				var outConnectorsArray		= Jsplumb.getOutConnectors();
 
 				inConnectorsArray.length = slabsIn;
 				outConnectorsArray.length = slabsOut;
 
-				Jsplumb.addEndPoint(jsPlumbInstance, guid, outConnectorsArray, inConnectorsArray);
+				Jsplumb.addEndPoints(jsPlumbInstance, guid, outConnectorsArray, inConnectorsArray);
 
 				// listen for new connections
 				jsPlumbInstance.bind('connection', function(connInfo, originalEvent) {
