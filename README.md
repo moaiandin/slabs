@@ -18,8 +18,9 @@ Processing slabs cover any slab that doesn't get data from a server, or display 
 ### Outputs
 Outputs are how the data, which is gathered and processed in the network, is seen. This can be in the form of a chart, table or any other way that data can be consumed. Data is passed into the output slab and then displayed using the settings the user has provided for that output slab. The sample slab output can be found <a href="https://github.com/slabs-io/output-slab-demo">here</a>.
 
-The spec for the input & output of slab objects currently looks like this, however during initial development this spec is likely to change frequently. :
+### Communication between slabs
 
+The spec for the input & output of slab objects currently looks like this, however during initial development this spec is likely to change frequently. :
 
  ```javascript
 var sampleData = {
@@ -43,13 +44,11 @@ var sampleData = {
 ## Help
 You can get help on the <a href="http://chat.slabs.io/">slabs forum</a>, or on the slabs IRC channel (#slabsio on freenode.net), we are all pretty friendly so come stop by!!
 
-
 ## Install
 ```shell
 npm install
 ```
 This will pull all your NPM modules, bower modules and all the external slabs listed in slabs.json.
-
 
 ## To run slabs locally
 ```shell
