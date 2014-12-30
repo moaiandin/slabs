@@ -1,13 +1,22 @@
 [![Build Status](https://api.shippable.com/projects/54774d48d46935d5fbbecc12/badge?branchName=master)](https://app.shippable.com/projects/54774d48d46935d5fbbecc12/builds/latest)
 # Slabs.io
 
-Slabs.io is a data experimentation platform. It enables drag & drop functionality for pulling, processing and then displaying the data.
+Slabs.io is a data experimentation platform. It enables drag & drop functionality for pulling, processing and then displaying the data. In slabs the user arranges a network of slabs on the page, the network can then be run and some form of output is generated.
 
 Slabs is an open-source project - you can submit pull requests for the main git repo.
 
 ## How it works
 
 The power of slabs comes from the external modules it consumes. These are submitted by users and then available for anyone to use in their own slab networks. There are 3 main types of slab, 'sources', 'processors' and 'outputs'.
+
+### Sources
+Sources provide data to the slab network, the user sets some parameters for the data source then the source slab goes out, grabs the data and passes it to the next slab(s) in the network. The sample slab source can be found <a href="https://github.com/slabs-io/api-slab-demo">here</a>.
+
+### Processors
+Processing slabs cover any slab that doesn't get data from a server, or display it. These can included things like combination, splitting, sorting and converting of data.
+
+### Outputs
+Outputs are how the data, which is gathered and processed in the network, is seen. This can be in the form of a chart, table or any other way that data can be consumed. Data is passed into the output slab and then displayed using the settings the user has provided for that output slab. The sample slab output can be found <a href="https://github.com/slabs-io/output-slab-demo">here</a>.
 
 The spec for the input & output of slab objects currently looks like this, however during initial development this spec is likely to change frequently. :
 
