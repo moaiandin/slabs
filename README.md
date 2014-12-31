@@ -48,7 +48,7 @@ npm install
 ```
 This will pull all your NPM modules, bower modules and all the external slabs listed in slabs.json.
 
-## To run slabs locally
+## Running locally
 ```shell
 grunt
 ```
@@ -59,7 +59,7 @@ The project uses MEANJS, so to add modules on the front or the backend you can u
 
 On the front end please try and follow the <a href="https://github.com/johnpapa/angularjs-styleguide">john-papa angular style guide</a>
 
-### Dev Notes : 
+### Notes : 
 
 #### Front end libraries
 When adding front end libraries (including by bower), don't forget that you need to edit the config files which pull in the files. These are found here :
