@@ -70,4 +70,5 @@ When adding front end libraries (including by bower), don't forget that you need
 /config/env/secure.js
 ```
 You need to add the locations of the js files to the `assets.lib.js` property.
+Lastly, if the module is an angular module you need to add the name to `applicationModuleVendorDependencies` in `/public/config.js`.
 
