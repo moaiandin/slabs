@@ -58,3 +58,15 @@ And then navigate to http://localhost:3000/ in your browser.
 The project uses MEANJS, so to add modules on the front or the backend you can use yeoman commands. More info can be found <a href="http://meanjs.org/generator.html">here</a>.
 
 On the front end please try and follow the <a href="https://github.com/johnpapa/angularjs-styleguide">john-papa angular style guide</a>
+
+### Dev Notes : 
+
+#### Front end libraries
+When adding front end libraries (including by bower), don't forget that you need to edit the config files which pull in the files. These are found here :
+```
+/config/env/all.js
+/config/env/production.js
+/config/env/secure.js
+```
+You need to add the locations of the js files to the `assets.lib.js` property.
+
