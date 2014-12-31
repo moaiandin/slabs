@@ -4,7 +4,7 @@
 var ApplicationConfiguration = (function() {
 	// Init module configuration options
 	var applicationModuleName = 'slabs';
-	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngTouch',  'ngSanitize',  'ui.router', 'ui.bootstrap', 'ui.utils'];
+	var applicationModuleVendorDependencies = ['ngResource', 'ngCookies',  'ngTouch',  'ngSanitize',  'ui.router', 'ui.bootstrap', 'ui.utils', 'ngNotify'];
 
 	// Add a new vertical module
 	var registerModule = function(moduleName, dependencies) {
@@ -21,6 +21,7 @@ var ApplicationConfiguration = (function() {
 		registerModule: registerModule
 	};
 })();
+
 'use strict';
 
 //Start by defining the main module and adding the module dependencies
@@ -470,27 +471,30 @@ angular.module('stage').config(['$stateProvider',
 
 // todo - tests for this class.
 
-angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce','Jsplumb',
+angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce','Jsplumb','Networkvalidator','ngNotify',
 
-	function($scope, $state, SlabsServices, $sce, Jsplumb ) {
+	function($scope, $state, SlabsServices, $sce, Jsplumb, Networkvalidator, ngNotify ) {
 
 		var vm = this;
 
 		// this sets the state and loads the sidebar into the stage view.
 		$state.go('stage.sidebar');
 
-		vm.slabs 					= [];
-		vm.iframeSrc 				= '';
-		vm.currentlyOpenSlab		= '';
+		vm.slabs 									= [];
+		vm.iframeSrc 							= '';
+		vm.currentlyOpenSlab			= '';
 		vm.settingsPageVisible 		= false;
-		vm.runSlabNetwork 			= runSlabNetwork;
-		vm.openSlabSettings 		= openSlabSettings;
-		vm.viewOutput 				= viewOutput;
-		vm.outputs = null;
+		vm.runSlabNetwork 				= runSlabNetwork;
+		vm.openSlabSettings 			= openSlabSettings;
+		vm.viewOutput 						= viewOutput;
+		vm.outputs 								= null;
+		vm.removeSlab							= removeSlab;
 
-		var jsPlumbInstance  		= Jsplumb.getInstance();
+		var jsPlumbInstance  			= Jsplumb.getInstance();
+
 
 		////////////
+
 
 		function openOutputTabs(outputs){
 			console.log(outputs);
@@ -500,14 +504,29 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			});
 		}
 
+		function validateNetwork(){
+
+			var errors = Networkvalidator.validate(vm.slabs);
+
+			if(errors){
+				ngNotify.set(errors[0], 'error');
+				return false;
+			}else{
+				return true;
+			}
+
+		}
+
 		function runSlabNetwork(){
+
+			if(validateNetwork() === false){
+				return;
+			}
 
 			var networkObject = {
 				title : 'sample network',
 				slabs : vm.slabs
 			};
-
-			//console.log(networkObject);
 
 			SlabsServices.network.save({}, networkObject,
 				function(resp){
@@ -539,6 +558,20 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 					console.log('error loading settings file');
 				}
 
+			});
+
+		}
+
+		// remove a slab from the stage
+		function removeSlab(slab){
+
+			var inConnectorsArray 		= Jsplumb.getInConnectors();
+			var outConnectorsArray		= Jsplumb.getOutConnectors();
+
+			Jsplumb.removeEndPoints(jsPlumbInstance, slab.guid, outConnectorsArray, inConnectorsArray);
+
+			vm.slabs = _.reject(vm.slabs, function(item){
+				return item.guid === slab.guid;
 			});
 
 		}
@@ -638,13 +671,13 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				var slabsIn		= item.getAttribute('data-slab-in');
 				var slabsOut  = item.getAttribute('data-slab-out');
 
-				var inConnectorsArray = ['TopCenter', 'TopLeft', 'TopRight'];
-				var outConnectorsArray = ['BottomCenter', 'BottomLeft', 'BottomRight'];
+				var inConnectorsArray 		= Jsplumb.getInConnectors();
+				var outConnectorsArray		= Jsplumb.getOutConnectors();
 
 				inConnectorsArray.length = slabsIn;
 				outConnectorsArray.length = slabsOut;
 
-				Jsplumb.addEndPoint(jsPlumbInstance, guid, outConnectorsArray, inConnectorsArray);
+				Jsplumb.addEndPoints(jsPlumbInstance, guid, outConnectorsArray, inConnectorsArray);
 
 				// listen for new connections
 				jsPlumbInstance.bind('connection', function(connInfo, originalEvent) {
@@ -697,7 +730,8 @@ angular.module('stage').directive('slab', [
 				top:'=',
 				in:'=',
 				out:'=',
-				openSettings:'&'
+				openSettings:'&',
+				removeClicked:'&'
 			}
 		};
 	}
@@ -776,7 +810,32 @@ angular.module('stage').factory('Jsplumb', [
 				});
 			},
 
-			addEndPoint: function(instance, toId, sourceAnchors, targetAnchors) {
+			getInConnectors: function (){
+				var inConnectorsArray 		= ['TopCenter', 'TopLeft', 'TopRight'];
+				return inConnectorsArray;
+			},
+
+			getOutConnectors: function (){
+				var outConnectorsArray 		= ['BottomCenter', 'BottomLeft', 'BottomRight'];
+				return outConnectorsArray;
+			},
+
+			removeEndPoints: function(instance, endpointId, sourceAnchors, targetAnchors){
+
+				for (var i = 0; i < sourceAnchors.length; i++) {
+					var sourceUUID = endpointId + sourceAnchors[i];
+					instance.deleteEndpoint(sourceUUID);
+				}
+				for (var j = 0; j < targetAnchors.length; j++) {
+					var targetUUID = endpointId + targetAnchors[j];
+					instance.deleteEndpoint(targetUUID);
+				}
+
+				instance.detachAllConnections(endpointId);
+
+			},
+
+			addEndPoints: function(instance, toId, sourceAnchors, targetAnchors) {
 
 				for (var i = 0; i < sourceAnchors.length; i++) {
 					var sourceUUID = toId + sourceAnchors[i];
@@ -793,6 +852,73 @@ angular.module('stage').factory('Jsplumb', [
 
 		};
 
+	}
+]);
+
+'use strict';
+
+angular.module('stage').factory('Networkvalidator', [
+	function() {
+
+		var Errors = {
+			NO_SLABS : 'There doesn\'t seem to be any slabs on the stage',
+			DISCONNECTED_SLAB : 'A Slab seems to be "floating" - all slabs need to have at least 1 connection, please check : '
+		};
+
+		// Public API
+		return {
+
+			validate: function(slabsList) {
+
+				var valid = true;
+				var errors = [];
+				var usedSources = [];
+
+				// check that there are slabs on the stage
+				if(slabsList.length === 0){
+					errors.push(Errors.NO_SLABS);
+				}
+
+				// check that all outputs are connected to something
+				_(slabsList).each(function(item){
+					if(item.type === 'output') {
+						if (item.dependencies.length === 0) {
+							valid = false;
+							errors.push(Errors.DISCONNECTED_SLAB + item.name);
+						} else {
+							usedSources = usedSources.concat(item.dependencies);
+						}
+					}
+				});
+
+				// check that all sources are connected to something
+				_(slabsList).each(function(item){
+
+					if(item.type === 'api') {
+
+						var dependencyFound = false;
+						_(usedSources).each(function(source){
+							if(item.guid === source){
+								dependencyFound = true;
+							}
+						});
+
+						if(dependencyFound === false){
+							errors.push(Errors.DISCONNECTED_SLAB + item.name);
+						}
+					}
+
+				});
+
+				if(errors.length > 0){
+					return errors;
+				}else{
+					return false;
+				}
+
+			}
+
+		};
 	}
 ]);
 
