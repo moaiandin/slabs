@@ -48,11 +48,11 @@ npm install
 ```
 This will pull all your NPM modules, bower modules and all the external slabs listed in slabs.json.
 
-## Running locally
+#### Running locally
+To run the server just type the following command, and then navigate to http://localhost:3000/ in your browser.
 ```shell
 grunt
 ```
-And then navigate to http://localhost:3000/ in your browser.
 
 ## Development
 The project uses MEANJS, so to add modules on the front or the backend you can use yeoman commands. More info can be found <a href="http://meanjs.org/generator.html">here</a>.
