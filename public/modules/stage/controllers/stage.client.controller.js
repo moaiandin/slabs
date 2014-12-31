@@ -2,9 +2,9 @@
 
 // todo - tests for this class.
 
-angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce','Jsplumb',
+angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce','Jsplumb','Networkvalidator','ngNotify',
 
-	function($scope, $state, SlabsServices, $sce, Jsplumb ) {
+	function($scope, $state, SlabsServices, $sce, Jsplumb, Networkvalidator, ngNotify ) {
 
 		var vm = this;
 
@@ -37,17 +37,14 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		function validateNetwork(){
 
-			var valid = true;
+			var errors = Networkvalidator.validate(vm.slabs);
 
-			// check that all outputs are connected to a source
-			_(vm.slabs).each(function(item){
-
-
-
-			});
-
-
-			return valid;
+			if(errors){
+				ngNotify.set(errors[0], 'error');
+				return false;
+			}else{
+				return true;
+			}
 
 		}
 
@@ -61,8 +58,6 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				title : 'sample network',
 				slabs : vm.slabs
 			};
-
-			//console.log(networkObject);
 
 			SlabsServices.network.save({}, networkObject,
 				function(resp){

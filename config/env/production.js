@@ -6,7 +6,8 @@ module.exports = {
 	assets: {
 		lib: {
 			css: [
-				'public/lib/bootstrap/dist/css/bootstrap.min.css'
+				'public/lib/bootstrap/dist/css/bootstrap.min.css',
+				'public/lib/ng-notify/dist/ng-notify.min.css'
 			],
 			js: [
 				'public/lib/angular/angular.min.js',
@@ -21,7 +22,8 @@ module.exports = {
 				'public/lib/jquery-ui/jquery-ui.min.js',
 				'public/lib/underscore/underscore-min.js',
 				'public/lib/bootstrap/dist/js/bootstrap.min.js',
-				'public/lib/jsplumb/dist/js/jquery.jsPlumb-1.7.2-min.js'
+				'public/lib/jsplumb/dist/js/jquery.jsPlumb-1.7.2-min.js',
+				'public/lib/ng-notify/dist/ng-notify.min.js'
 			]
 		},
 		css: 'public/dist/application.min.css',
