@@ -16,6 +16,7 @@
     "jquery-ui": "~1.11.2",
     "jsplumb": "1.7.2",
     "underscore": "~1.7.0",
-    "qwest":"~1.4.0"
+    "qwest":"~1.4.0",
+    "ng-notify": "~0.5.1"
   }
 }

@@ -5,11 +5,12 @@
 	 id="{{guid}}"
 	 style="top: {{top}}px; left: {{left}}px">
 	<div class="panel-heading">
-		<h3 class="panel-title">{{name}}
-			<span style="float: right" class="glyphicon glyphicon-th-list" data-ng-click="openSettings()"></span>
+		<h3 class="panel-title">&nbsp;
+			<span style="float: right" class="glyphicon glyphicon-th-list openBtn" data-ng-click="openSettings()"></span>
+			<span style="float: left" class="glyphicon glyphicon-remove removeBtn" data-ng-click="removeClicked()"></span>
 		</h3>
 	</div>
 	<div class="panel-body">
-		Details of the slab go here
+		{{name}}
 	</div>
 </div>
