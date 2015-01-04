@@ -432,7 +432,7 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServi
 				$('.slab-list .slab-item').draggable({helper:'clone'});
 			};
 
-			$timeout(run, 100);
+			$timeout(run, 400);
 
 		}
 
