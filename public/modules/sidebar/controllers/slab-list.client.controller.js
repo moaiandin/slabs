@@ -14,12 +14,16 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServi
 		};
 
 		$scope.$watch('slabList', function(){
+			console.log('item changed');
 			$timeout(function(){
+				console.log('making draggable');
 				$('.slab-item').draggable({helper:'clone'});
-			},100);
+			},500);
 		});
 
+
 		$scope.slabList = SlabsServices.slabList.query({slabType:'api'});
+
 
 	}
 
