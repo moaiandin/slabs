@@ -9,21 +9,38 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServi
 
 	function($scope, SlabsServices, $timeout) {
 
-		$scope.typeChanged = function(id){
-			$scope.slabList = SlabsServices.slabList.query({slabType:id});
-		};
+		var vm = this;
+		vm.typeChanged = typeChanged;
+		vm.slabList = SlabsServices.slabList.query({slabType:'api'});
 
-		$scope.$watch('slabList', function(){
-			console.log('item changed');
-			$timeout(function(){
-				console.log('making draggable');
-				$('.slab-item').draggable({helper:'clone'});
-			},500);
-		});
+		console.log('open sidebar');
 
+		function typeChanged(id){
+			console.log('typeChanged');
+			vm.slabList = SlabsServices.slabList.query({slabType:id});
+		}
 
-		$scope.slabList = SlabsServices.slabList.query({slabType:'api'});
+		function makeSlabsDraggable(){
 
+			console.log(' _ _ making draggable');
+
+			var run = function(){
+				console.log(' _ making draggable');
+				console.log($('.slab-list').children());
+				$('.slab-list .slab-item').draggable({helper:'clone'});
+			};
+
+			$timeout(run, 100);
+
+		}
+
+		// watch for changes to the slab list
+		$scope.$watch(function () {
+			return vm.slabList;
+		}, makeSlabsDraggable);
+
+		// initialize the 'draggability of slabs in the list'
+		makeSlabsDraggable();
 
 	}
 
