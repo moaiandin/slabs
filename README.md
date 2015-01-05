@@ -1,5 +1,4 @@
 [![Stories in Ready](https://badge.waffle.io/slabs-io/slabs.png?label=ready&title=Ready)](https://waffle.io/slabs-io/slabs)
-
 [![Build Status](https://api.shippable.com/projects/54774d48d46935d5fbbecc12/badge?branchName=master)](https://app.shippable.com/projects/54774d48d46935d5fbbecc12/builds/latest)
 # Slabs.io
 
