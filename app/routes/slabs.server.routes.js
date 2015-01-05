@@ -13,7 +13,7 @@ module.exports = function(app, redisClient) {
 		.get(slabNetwork.getOutputData);
 
 	/* Slabs */
-	app.route('/network/')
+	app.route('/networkview/')
 		.post(slabNetwork.create);
 
 	/* Slab Types */

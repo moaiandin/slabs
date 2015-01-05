@@ -2,8 +2,6 @@
 'use strict';
 
 // todo - tests for this class
-// todo - use controllerAs syntax with a vm var.
-// todo - move bindable members to the top : https://github.com/johnpapa/angularjs-styleguide#style-y033
 
 angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServices','$timeout',
 
@@ -13,7 +11,19 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServi
 		vm.typeChanged = typeChanged;
 		vm.slabList = SlabsServices.slabList.query({slabType:'api'});
 
-		console.log('open sidebar');
+		////////////
+
+		function init(){
+
+			// watch for changes to the slab list
+			$scope.$watch(function () {
+				return vm.slabList;
+			}, makeSlabsDraggable);
+
+			// initialize the 'draggability of slabs in the list'
+			makeSlabsDraggable();
+
+		}
 
 		function typeChanged(id){
 			console.log('typeChanged');
@@ -34,13 +44,7 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServi
 
 		}
 
-		// watch for changes to the slab list
-		$scope.$watch(function () {
-			return vm.slabList;
-		}, makeSlabsDraggable);
-
-		// initialize the 'draggability of slabs in the list'
-		makeSlabsDraggable();
+		init();
 
 	}
 

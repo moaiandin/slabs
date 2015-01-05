@@ -9,7 +9,7 @@ module.exports = function(grunt) {
 		clientJS: ['public/js/*.js', 'public/modules/**/*.js'],
 		clientCSS: ['public/modules/**/*.css'],
 		mochaTests: ['app/tests/**/*.js'],
-		slabsLib:['public/slabs.io.js/**.js', 'public/libs/qwest/src/qwest.js']
+		slabsLib:['public/slabs.io.js/**.js', 'public/lib/qwest/src/qwest.js']
 	};
 
 	// Project Configuration

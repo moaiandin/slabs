@@ -18,7 +18,7 @@
          */
         getData: function(){
             var id = getUrlParameter('id');
-            return qwest.get('/getdata/'+id);
+            return qwest.get('/getdata/'+id, null, {dataType:'json', responseType:'json'});
         }
         
     };
