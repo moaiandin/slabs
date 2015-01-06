@@ -63,7 +63,7 @@ module.exports = function(db, redisClient) {
 
 	// Set views path and view engine
 	app.set('view engine', 'server.view.html');
-	app.set('views', './app/views');
+	app.set('views', ['./app/views', './app/views/networkviews']);
 
 	// Environment dependent middleware
 	if (process.env.NODE_ENV === 'development') {
@@ -114,7 +114,11 @@ module.exports = function(db, redisClient) {
 	// Setting the app router and static folder
 	app.use(express.static(path.resolve('./public')));
 
+	// serve up the external slab files
 	slabs.addSlabsFiles(app);
+
+	// serve up the slab network view files
+	app.use('/view-files', express.static(path.resolve('./app/views/networkviewfiles')));
 
 	// add global error handling on the redis client
 	redisClient.on('error', function (err) {

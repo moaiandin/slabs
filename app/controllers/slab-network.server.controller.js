@@ -10,7 +10,8 @@ var mongoose    = require('mongoose'),
     async       = require('async'),
     Q           = require('q'),
     redis       = require('redis'),
-    SlabOutput  = mongoose.model('SlabOutput');
+    SlabOutput  = mongoose.model('SlabOutput'),
+    NetworkView = mongoose.model('NetworkView');
 
 module.exports = function(redisClient) {
 
@@ -20,9 +21,6 @@ module.exports = function(redisClient) {
 
         // run function for individual slabs
         var run = function(slabObj){
-
-            console.log('runningSlab');
-            console.dir(item);
 
             switch(slabObj.type) {
 
@@ -139,16 +137,20 @@ module.exports = function(redisClient) {
 
             processSlabs(outputIDs, slabs).then(function (runSlabsList) {
 
-                console.log('runSlabsList');
-                console.dir(runSlabsList);
-
                 var outputSlabs = _.where(runSlabsList, { type:'output' });
 
-                res.status(200);
-                res.send({
-                    status: 'success',
-                    outputs:outputSlabs
+                var networkViewObject = {
+                    outputs : outputSlabs
+                };
+                var networkView = new NetworkView(networkViewObject);
+                networkView.save(function(err, doc){
+                    res.status(200);
+                    res.send({
+                        status: 'success',
+                        viewId:doc._id
+                    });
                 });
+
 
             });
 
@@ -167,7 +169,6 @@ module.exports = function(redisClient) {
 
         var outputId = req.params.outputid;
         SlabOutput.findById(outputId, function(err, doc){
-            console.log(doc);
 
             if(err){
                 res.status(400).send({
@@ -188,6 +189,39 @@ module.exports = function(redisClient) {
      * Show the current Slab network
      */
     exports.read = function (req, res) {
+
+        var networkId = req.params.networkViewID;
+        NetworkView.findById(networkId, function(err, doc){
+
+            if(err){
+
+                res.status(400).send({
+                    message: 'invalid id sent - can\'t find a saved slab network view'
+                });
+
+            }else{
+
+                res.status(200);
+
+                console.log(doc.outputs);
+                var urlRoot = req.protocol + '://' + req.get('host');
+
+                // set the view settings
+                var isOdd = doc.outputs.length % 2 !== 0;
+                var settings = {
+                    isOdd : isOdd
+                };
+
+                var options = { root:urlRoot, outputs:doc.outputs, settings:settings };
+                res.render('default-view', options);
+
+            }
+        });
+
+
+        return;
+
+
 
     };
 

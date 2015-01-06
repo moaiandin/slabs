@@ -18,7 +18,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		vm.runSlabNetwork 				= runSlabNetwork;
 		vm.openSlabSettings 			= openSlabSettings;
 		vm.viewOutput 						= viewOutput;
-		vm.outputs 								= null;
+		vm.viewId 								= null;
 		vm.removeSlab							= removeSlab;
 
 		var jsPlumbInstance  			= Jsplumb.getInstance();
@@ -27,12 +27,11 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		////////////
 
 
-		function openOutputTabs(outputs){
-			console.log(outputs);
-			_.each(outputs, function(output){
-				console.log(output);
-				window.open(output.result);
-			});
+		function openViewTab(viewId){
+
+			var viewURL = '/networkview/'+viewId;
+			window.open(viewURL);
+
 		}
 
 		function validateNetwork(){
@@ -51,6 +50,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		function runSlabNetwork(){
 
 			if(validateNetwork() === false){
+				console.log('validation error');
 				return;
 			}
 
@@ -59,12 +59,13 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				slabs : vm.slabs
 			};
 
+			console.log('calling runSlabNetwork');
+
 			SlabsServices.network.save({}, networkObject,
 				function(resp){
 				  console.log('network success!!');
 					console.log(resp);
-					vm.outputs = resp.outputs;
-
+					vm.viewId = resp.viewId;
 			},function(resp){
 					console.log('network fail...');
 					console.log(resp);
@@ -73,7 +74,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		}
 
 		function viewOutput(){
-			openOutputTabs(vm.outputs);
+			openViewTab(vm.viewId);
 		}
 
  		// open the slab settings window.

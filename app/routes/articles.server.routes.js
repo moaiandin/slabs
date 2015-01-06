@@ -7,6 +7,7 @@ var users = require('../../app/controllers/users.server.controller'),
 	articles = require('../../app/controllers/articles.server.controller');
 
 module.exports = function(app) {
+
 	// Article Routes
 	app.route('/articles')
 		.get(articles.list)
