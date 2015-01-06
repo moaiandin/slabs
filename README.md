@@ -1,6 +1,12 @@
 [![Build Status](https://api.shippable.com/projects/54774d48d46935d5fbbecc12/badge?branchName=master)](https://app.shippable.com/projects/54774d48d46935d5fbbecc12/builds/latest)
 # Slabs.io
 
+#### Check out the to-do list
+[![Stories in Ready](https://badge.waffle.io/slabs-io/slabs.png?label=ready&title=Ready)](https://waffle.io/slabs-io/slabs)
+
+#### Come chat with us on gitter
+[![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/slabs-io/slabs?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 Slabs.io is a data experimentation platform. It enables drag & drop functionality for pulling, processing and then displaying the data. In slabs the user arranges a network of slabs on the page, the network can then be run and some form of output is generated.
 
 ## How it works
