@@ -14,3 +14,16 @@
 .sidebar .list-group {
   margin-top:10px
 }
+
+.sidebar .list-group-item {
+  -webkit-user-select: none;  /* Chrome all / Safari all */
+  -moz-user-select: none;     /* Firefox all */
+  -ms-user-select: none;      /* IE 10+ */
+  user-select: none;
+  cursor: move;
+}
+
+.sidebar .ui-draggable-dragging {
+  width:200px;
+}
+
