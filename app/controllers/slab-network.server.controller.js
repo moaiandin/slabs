@@ -41,7 +41,18 @@ module.exports = function(redisClient) {
                     callback();
                     break;
                 case 'processing' :
-                    callback();
+                    try{
+                        var slab = require('../slabs/processing/'+slabObj.id+'/process/app.js');
+                        slab.process({settings: slabObj.settings || {}, data: slabObj.result})
+                            .then(function(data){
+                                slabObj.result = data;
+                                callback();
+                            });
+                    }catch(err){
+                        slabObj.error = true;
+                        slabObj.result = err;
+                        callback();
+                    }
                     break;
                 case 'output' :
 
