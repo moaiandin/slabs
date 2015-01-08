@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html class="full-size">
+<head lang="en">
+    <meta charset="UTF-8">
+    <title></title>
+    <link rel="stylesheet" href="/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/view-files/default-view/styles.css" />
+</head>
+<body class="full-size">
+
+    <header class="navbar navbar-static-top navbar-inverse">
+        <div class="navbar-header">
+            <a href="/#!/" class="navbar-brand">slabs network</a>
+        </div>
+    </header>
+
+    <div class="block-container">
+
+        <div class="row">
+
+        {% for output in outputs %}
+
+            {% if loop.last and settings.isOdd === true %}
+                <div class="block col-md-12">
+            {% else %}
+                <div class="block col-md-6">
+            {% endif %}
+                <iframe class="full-size" src="{{root + output.result}}"></iframe>
+            </div>
+        {% endfor %}
+
+        </div>
+
+    </div>
+
+    <!-- Add the scripts in -->
+    <script src="/lib/jquery/dist/jquery.min.js"></script>
+
+</body>
+</html>

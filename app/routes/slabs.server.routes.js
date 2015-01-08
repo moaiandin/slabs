@@ -12,9 +12,13 @@ module.exports = function(app, redisClient) {
 	app.route('/getdata/:outputid')
 		.get(slabNetwork.getOutputData);
 
-	/* Slabs */
+	/* Create Slab Network View */
 	app.route('/networkview/')
 		.post(slabNetwork.create);
+
+	/* Return Slab Network View */
+	app.route('/networkview/:networkViewID')
+		.get(slabNetwork.read);
 
 	/* Slab Types */
 	app.route('/slab/types/')
