@@ -1,4 +1,4 @@
-/* global processSlabs:true */
+/* global require:true */
 
 'use strict';
 
@@ -9,106 +9,37 @@ var mongoose    = require('mongoose'),
     _           = require('lodash'),
     async       = require('async'),
     Q           = require('q'),
-    redis       = require('redis'),
     SlabOutput  = mongoose.model('SlabOutput'),
     NetworkView = mongoose.model('NetworkView');
 
-module.exports = function(redisClient) {
+module.exports = function() {
 
     var exports = {};
 
     var runSlab = function(item, callback, fullList){
 
-        // run function for individual slabs
-        var run = function(slabObj){
+        processSlabs(item.dependencies, fullList).then(function(){
 
-            switch(slabObj.type) {
-
-                case 'api' :
-                    try{
-                        var slab = require('../slabs/api/'+slabObj.id+'/process/app.js');
-                        slab.getData(slabObj.settings || {}).then(function(data){
-                            slabObj.result = data;
-                            callback();
-                        });
-                    }catch(err){
-                        slabObj.error = true;
-                        slabObj.result = err;
-                        callback();
-                    }
-                    break;
-                case 'static' :
-                    callback();
-                    break;
-                case 'processing' :
-                    try{
-                        var slab = require('../slabs/processing/'+slabObj.id+'/process/app.js');
-                        slab.process({settings: slabObj.settings || {}, data: slabObj.result})
-                            .then(function(data){
-                                slabObj.result = data;
-                                callback();
-                            });
-                    }catch(err){
-                        slabObj.error = true;
-                        slabObj.result = err;
-                        callback();
-                    }
-                    break;
-                case 'output' :
-
-                    var dependencyData = _.findWhere(fullList, { guid:slabObj.dependencies[0] });
-
-                    var outputDependencyData = {
-                        settings:slabObj.settings,
-                        data:dependencyData.result
-                    };
-                    var outputData = new SlabOutput(outputDependencyData);
-                    outputData.save(function(err, doc) {
-
-                        if(err){
-                            console.log(err);
-                            slabObj.error = true;
-                            slabObj.result = err;
-                            callback();
-                            return;
-                        }
-
-                        // create a url from the slab data and the id of the saved dependency data
-                        var outputUrl = '/slab-files/output/'+slabObj.id+'/output/?id='+doc._id;
-                        slabObj.result = outputUrl;
-                        callback();
-
-                    });
-
-
-                    break;
-            }
-
-        };
-
-        // run any dependency slabs before running this one - this works recursively.
-        if(item.dependencies.length > 0){
-            processSlabs(item.dependencies, fullList).then(function(){
-                run(item);
+            var dependencies = item.dependencies.map(function(guid){
+                return _.findWhere(fullList, {guid:guid});
             });
-        }else{
-            run(item);
-        }
 
+            run(item, dependencies).then(function(){
+                callback();
+            });
+        });
 
     };
 
     var processSlabs = function(ids, fullList){
-        //console.log('processSlabs');
 
         var deferred = Q.defer();
 
         // filters the fullList to only include the relevant IDs.
         var slabsToProcess = _.filter(fullList, function(item){
-            var rtn = _.contains(ids, item.guid);
-            return rtn;
+            return _.contains(ids, item.guid);
         });
-        //console.dir(slabsToProcess);
+
         async.eachSeries(slabsToProcess, function(item, callback){
             runSlab(item, callback, fullList);
         }, function(err){
@@ -126,6 +57,23 @@ module.exports = function(redisClient) {
 
         return deferred.promise;
 
+    };
+
+    // run function for individual slabs
+    var run = function(slabObj, dependencies){
+
+        var deferred = Q.defer();
+
+        try{
+            require('./slab-network/slab-network.' + slabObj.type + '.controller.js')
+                .execute(slabObj, dependencies, deferred.resolve);
+        }catch(err){
+            slabObj.error = true;
+            slabObj.result = err;
+            deferred.resolve();
+        }
+
+        return deferred.promise;
     };
 
 
