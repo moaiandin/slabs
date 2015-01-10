@@ -605,6 +605,8 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		// update the slabs array with the new connection.
 		function updateConnections(sourceId, targetId, remove){
 
+			console.dir(sourceId, targetId, remove);
+
 			_(vm.slabs).each(function(item){
 
 				if(item.guid === targetId){
@@ -625,10 +627,11 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		// new connection event handler
 		function newConnection(connection) {
 
-			// set the label
+			/* set the label
 			var targetName = $(connection.target).data('slab-name');
 			var sourceName = $(connection.source).data('slab-name');
 			connection.getOverlay('label').setLabel( sourceName+ ' - ' + targetName);
+			*/
 
 			// update the slabs array to show the new connection
 			var targetId 	= connection.target.id;
@@ -770,15 +773,15 @@ angular.module('stage').factory('Jsplumb', [
 	function() {
 
 		var connectorPaintStyle = {
-			lineWidth:4,
-			strokeStyle:'#61B7CF',
+			lineWidth:3,
+			strokeStyle:'#439a46',
 			joinstyle:'round',
 			outlineColor:'white',
 			outlineWidth:2
 		};
 
 		var connectorHoverStyle = {
-			lineWidth:4,
+			lineWidth:2,
 			strokeStyle:'#216477',
 			outlineWidth:2,
 			outlineColor:'white'
@@ -792,13 +795,13 @@ angular.module('stage').factory('Jsplumb', [
 		var sourceEndpoint = {
 			endpoint:'Dot',
 			paintStyle:{
-				strokeStyle:'#7AB02C',
-				fillStyle:'transparent',
+				strokeStyle:'#9c27b0',
+				fillStyle:'#ffffff',
 				radius:4,
 				lineWidth:3
 			},
 			isSource:true,
-			connector:[ 'Flowchart', { stub:[40, 60], gap:10, cornerRadius:5, alwaysRespectStubs:true } ],
+			connector:[ 'Bezier', { stub:[40, 60], gap:10, cornerRadius:5, alwaysRespectStubs:true } ],
 			connectorStyle:connectorPaintStyle,
 			hoverPaintStyle:endpointHoverStyle,
 			connectorHoverStyle:connectorHoverStyle,
@@ -808,7 +811,7 @@ angular.module('stage').factory('Jsplumb', [
 		// the definition of target endpoints (will appear when the user drags a connection)
 		var targetEndpoint = {
 			endpoint:'Dot',
-			paintStyle:{ strokeStyle:'#5bc0de',radius:4, fillStyle:'transparent',lineWidth:3 },
+			paintStyle:{ strokeStyle:'#439a46',radius:4, fillStyle:'#ffffff',lineWidth:3 },
 			hoverPaintStyle:endpointHoverStyle,
 			maxConnections:-1,
 			dropOptions:{ hoverClass:'hover', activeClass:'active' },
@@ -825,13 +828,13 @@ angular.module('stage').factory('Jsplumb', [
 					DragOptions : { cursor: 'pointer', zIndex:2000 },
 					// the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text; in this
 					// case it returns the 'labelText' member that we set on each connection in the 'init' method below.
-					ConnectionOverlays : [
+					/*ConnectionOverlays : [
 						[ 'Label', {
-							location:0.1,
+							location:0.5,
 							id:'label',
 							cssClass:'aLabel'
 						}]
-					],
+					],*/
 					Container:'stage-container'
 				});
 			},
@@ -935,6 +938,7 @@ angular.module('stage').factory('Networkvalidator', [
 					}
 
 				});
+
 
 				if(errors.length > 0){
 					return errors;
