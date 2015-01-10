@@ -146,7 +146,10 @@ module.exports = function(grunt) {
 		batch_git_clone: {
 			slabs: {
 				options: {
-					configFile: 'slabs.json'
+					configFile: 'slabs.json',
+					overWrite : true,
+					npmInstall : true,
+					bowerInstall : true
 				}
 			}
 		}
