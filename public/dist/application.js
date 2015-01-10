@@ -911,10 +911,10 @@ angular.module('stage').factory('Networkvalidator', [
 						if (item.dependencies.length === 0) {
 							valid = false;
 							errors.push(Errors.DISCONNECTED_SLAB + item.name);
-						} else {
-							usedSources = usedSources.concat(item.dependencies);
 						}
 					}
+
+					usedSources = usedSources.concat(item.dependencies);
 				});
 
 				// check that all sources are connected to something
