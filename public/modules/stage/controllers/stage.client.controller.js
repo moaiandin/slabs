@@ -111,6 +111,8 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		// update the slabs array with the new connection.
 		function updateConnections(sourceId, targetId, remove){
 
+			console.dir(sourceId, targetId, remove);
+
 			_(vm.slabs).each(function(item){
 
 				if(item.guid === targetId){
@@ -131,10 +133,11 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		// new connection event handler
 		function newConnection(connection) {
 
-			// set the label
+			/* set the label
 			var targetName = $(connection.target).data('slab-name');
 			var sourceName = $(connection.source).data('slab-name');
 			connection.getOverlay('label').setLabel( sourceName+ ' - ' + targetName);
+			*/
 
 			// update the slabs array to show the new connection
 			var targetId 	= connection.target.id;
