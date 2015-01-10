@@ -53,6 +53,7 @@ angular.module('stage').factory('Networkvalidator', [
 
 				});
 
+
 				if(errors.length > 0){
 					return errors;
 				}else{

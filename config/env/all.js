@@ -14,7 +14,8 @@ module.exports = {
 		lib: {
 			css: [
 				'public/lib/bootstrap/dist/css/bootstrap.css',
-				'public/lib/ng-notify/dist/ng-notify.min.css'
+				'public/lib/ng-notify/dist/ng-notify.min.css',
+				'public/lib-int/bootswatch/paper-bootstrap.min.css'
 			],
 			js: [
 				'public/lib/angular/angular.js',
