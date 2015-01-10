@@ -5,6 +5,7 @@
         "sample" : "https://github.com/slabs-io/api-slab-demo.git"
       },
       "processing" : {
+        "aggregator" : "https://github.com/benbrunton/aggregator-slab.git"
       },
       "static" : {
       },
