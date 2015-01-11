@@ -17,6 +17,7 @@
     "jsplumb": "1.7.2",
     "underscore": "~1.7.0",
     "qwest": "~1.4.0",
-    "ng-notify": "~0.5.1"
+    "ng-notify": "~0.5.1",
+    "slabs.io.js": "~0.0.2"
   }
 }
