@@ -9,6 +9,8 @@ var mongoose     = require('mongoose'),
     _            = require('lodash'),
     swig         = require('swig'),
     path         = require('path'),
+    fs           = require('fs'),
+    util         = require('util'),
     errorHandler = require('./errors.server.controller'),
     redis        = require('redis'),
     slabsConfig  = require('../../slabs.json');
@@ -18,62 +20,56 @@ module.exports = function(redisClient) {
 
     var exports = {};
 
-    // loops over the slabs.json file and returns lists of slabs by type
+    // loops over the slabs folder file and returns lists of slabs by type
     function getSlabList(type){
 
-        var slabs = [];
+        var folders = fs.readdirSync('app/slabs/'+type);
 
-        var slabList = slabsConfig.app.slabs;
+        var slabs = _.map(folders, function(name){
 
-        for(var prop in slabList){
-
-            if(prop === type){
-
-                for(var slabID in slabList[prop]){
-
-                    try{
-                        var conf = require('../slabs/'+type+'/'+slabID+'/slabs-config.json');
-                        var slab = {
-                            name: conf.name,
-                            id: slabID,
-                            type: type,
-                            in : conf.connectionsIn,
-                            out : conf.connectionsOut
-                        };
-                        slabs.push(slab);
-                    }catch(err){
-                        console.log('Error reading slabs-config.json from :'+slabID+' in'+type);
-                        console.log(err);
-                    }
-
-                }
-
+            try{
+                var conf = require('../slabs/'+type+'/'+name+'/slabs-config.json');
+                var slab = {
+                    name: conf.name,
+                    id: name,
+                    type: type,
+                    in : conf.connectionsIn,
+                    out : conf.connectionsOut
+                };
+                return slab;
+            }catch(err){
+                console.log('Error reading slabs-config.json from :'+name+' in'+type);
+                console.log(err);
             }
 
-        }
+        });
 
         return slabs;
 
     }
 
+
     /**
-     * Get the lists of slab types
+     * Get the lists of slab types using the folder structure
      */
     exports.types = function (req, res) {
 
         var slabTypes = [];
-        var slabList = slabsConfig.app.slabs;
-        for(var prop in slabList){
+
+        var folders = fs.readdirSync('app/slabs');
+
+        slabTypes = _.map(folders, function(item){
             var slabType = {
-                id:prop,
-                label:prop
+                id:item,
+                label:item
             };
-            slabTypes.push(slabType);
-        }
+            return slabType;
+        });
 
         res.status(200);
         res.json(slabTypes);
     };
+
 
 
     /**
