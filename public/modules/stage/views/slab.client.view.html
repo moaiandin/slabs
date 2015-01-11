@@ -1,16 +1,17 @@
-<div class="panel panel-info slab"
+<div class="panel panel-{{bootstrapClass}} slab"
 	 data-slab-id="{{id}}"
 	 data-slab-name="{{name}}"
 	 data-slab-type="{{type}}"
 	 id="{{guid}}"
 	 style="top: {{top}}px; left: {{left}}px">
 	<div class="panel-heading">
-		<h3 class="panel-title">&nbsp;
-			<span style="float: right" class="glyphicon glyphicon-th-list openBtn" data-ng-click="openSettings()"></span>
-			<span style="float: left" class="glyphicon glyphicon-remove removeBtn" data-ng-click="removeClicked()"></span>
+		<h3 class="panel-title">
+			<span style="float: right" class="btn btn-sm glyphicon glyphicon-th-list openBtn" data-ng-click="openSettings()"></span>
+			<span style="float: left" class="btn btn-sm glyphicon glyphicon-remove removeBtn" data-ng-click="removeClicked()"></span>
 		</h3>
 	</div>
 	<div class="panel-body">
-		{{name}}
+		<span class="slab-title">{{name}}</span>
+		<span class="glyphicon {{iconClass}}"></span>
 	</div>
 </div>
