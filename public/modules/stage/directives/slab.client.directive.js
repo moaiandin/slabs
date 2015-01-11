@@ -7,6 +7,18 @@ angular.module('stage').directive('slab', [
 			restrict: 'E',
 			link: function postLink(scope, element, attrs) {
 
+				scope.bootstrapClass = 'info';
+				scope.iconClass = 'glyphicon-save';
+
+				if(scope.type === 'output'){
+					scope.iconClass = 'glyphicon-stats';
+					scope.bootstrapClass = 'success';
+				}
+				if(scope.type === 'processing'){
+					scope.iconClass = 'glyphicon-cog';
+					scope.bootstrapClass = 'warning';
+				}
+
 			},
 			scope: {
 				id:'=',
