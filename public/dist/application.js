@@ -505,16 +505,16 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		// this sets the state and loads the sidebar into the stage view.
 		$state.go('stage.sidebar');
 
-		var scheduler = {
-			id:'scheduler',
-			guid:'scheduler',
-			name:'scheduler',
-			type:'scheduler',
+		var ticker = {
+			id:'ticker',
+			guid:'ticker',
+			name:'ticker',
+			type:'ticker',
 			left:'50px',
 			top:'50px'
 		};
 
-		vm.slabs 									= [scheduler];
+		vm.slabs 									= [ticker];
 		vm.iframeSrc 							= '';
 		vm.currentlyOpenSlab			= '';
 		vm.settingsPageVisible 		= false;
@@ -534,12 +534,10 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 			setTimeout(function(){
 
-
-
 				var inConnectorsArray 		= [];
 				var outConnectorsArray		= Jsplumb.getOutConnectors();
 
-				Jsplumb.addEndPoints(jsPlumbInstance, 'scheduler', outConnectorsArray, inConnectorsArray);
+				Jsplumb.addEndPoints(jsPlumbInstance, 'ticker', outConnectorsArray, inConnectorsArray);
 
 				// make slabs draggable
 				jsPlumbInstance.draggable(jsPlumb.getSelector('.stage-container .panel'), { grid: [20, 20] });
@@ -779,7 +777,7 @@ angular.module('stage').directive('slab', [
 			restrict: 'E',
 			link: function postLink(scope, element, attrs) {
 
-				scope.hideDelete = scope.type === 'scheduler';
+				scope.hideDelete = scope.type === 'ticker';
 
 				scope.bootstrapClass = 'default';
 				scope.iconClass = 'glyphicon-time';

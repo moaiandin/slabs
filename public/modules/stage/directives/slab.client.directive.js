@@ -7,7 +7,7 @@ angular.module('stage').directive('slab', [
 			restrict: 'E',
 			link: function postLink(scope, element, attrs) {
 
-				scope.hideDelete = scope.type === 'scheduler';
+				scope.hideDelete = scope.type === 'ticker';
 
 				scope.bootstrapClass = 'default';
 				scope.iconClass = 'glyphicon-time';
