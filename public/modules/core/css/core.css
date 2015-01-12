@@ -4,6 +4,13 @@
 .navbar-right {
 	margin-right:0 !important;
 }
+.navbar-text {
+	color:#fff !important;
+	position:absolute;
+	top:4px;
+	left:calc(50% - 100px);
+	letter-spacing: 2px;
+}
 .undecorated-link:hover {
 	text-decoration: none;
 }

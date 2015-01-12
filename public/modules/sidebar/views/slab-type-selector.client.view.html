@@ -1,6 +1,10 @@
-<div class="slab-type-selector btn-group" role="group">
-	<button type="button" class="btn btn-default btn-xs" data-ng-repeat="slabtype in types" data-ng-click="buttonClicked(slabtype.id)">
-		{{slabtype.label}}
-	</button>
+<div class="slab-type-selector btn-group btn-group-justified" role="group">
+
+	<div class="btn-group" role="group" data-ng-repeat="slabtype in types">
+		<button type="button" class="btn btn-default btn-sm"  data-ng-click="buttonClicked(slabtype.id)">
+			{{slabtype.label}}
+		</button>
+	</div>
+
 </div>
 

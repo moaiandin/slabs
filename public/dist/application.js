@@ -411,7 +411,7 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServi
 
 		var vm = this;
 		vm.typeChanged = typeChanged;
-		vm.slabList = SlabsServices.slabList.query({slabType:'api'});
+		vm.slabList = SlabsServices.slabList.query({slabType:'source'});
 
 		////////////
 
