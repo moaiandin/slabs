@@ -1,5 +1,7 @@
 'use strict';
 
+// todo - add scheduler validation in
+
 angular.module('stage').factory('Networkvalidator', [
 	function() {
 
@@ -37,7 +39,7 @@ angular.module('stage').factory('Networkvalidator', [
 				// check that all sources are connected to something
 				_(slabsList).each(function(item){
 
-					if(item.type === 'api') {
+					if(item.type === 'source') {
 
 						var dependencyFound = false;
 						_(usedSources).each(function(source){

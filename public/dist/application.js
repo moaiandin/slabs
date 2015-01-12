@@ -411,7 +411,7 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServi
 
 		var vm = this;
 		vm.typeChanged = typeChanged;
-		vm.slabList = SlabsServices.slabList.query({slabType:'api'});
+		vm.slabList = SlabsServices.slabList.query({slabType:'source'});
 
 		////////////
 
@@ -505,7 +505,16 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		// this sets the state and loads the sidebar into the stage view.
 		$state.go('stage.sidebar');
 
-		vm.slabs 									= [];
+		var scheduler = {
+			id:'scheduler',
+			guid:'scheduler',
+			name:'scheduler',
+			type:'scheduler',
+			left:'50px',
+			top:'50px'
+		};
+
+		vm.slabs 									= [scheduler];
 		vm.iframeSrc 							= '';
 		vm.currentlyOpenSlab			= '';
 		vm.settingsPageVisible 		= false;
@@ -519,6 +528,26 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 
 		////////////
+
+
+		function init(){
+
+			setTimeout(function(){
+
+
+
+				var inConnectorsArray 		= [];
+				var outConnectorsArray		= Jsplumb.getOutConnectors();
+
+				Jsplumb.addEndPoints(jsPlumbInstance, 'scheduler', outConnectorsArray, inConnectorsArray);
+
+				// make slabs draggable
+				jsPlumbInstance.draggable(jsPlumb.getSelector('.stage-container .panel'), { grid: [20, 20] });
+
+
+			}, 500);
+
+		}
 
 
 		function openViewTab(viewId){
@@ -686,8 +715,8 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 					id						:slabID,
 					type					:slabType,
 					name					:slabName,
-					left					:left,
-					top						:top,
+					left					:left+'px',
+					top						:top+'px',
 					settings			:{},
 					dependencies 	:[]
 				};
@@ -735,6 +764,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			$scope.$digest();
 		};
 
+		init();
 
 	}
 
@@ -749,14 +779,21 @@ angular.module('stage').directive('slab', [
 			restrict: 'E',
 			link: function postLink(scope, element, attrs) {
 
-				scope.bootstrapClass = 'info';
-				scope.iconClass = 'glyphicon-save';
+				scope.hideDelete = scope.type === 'scheduler';
+
+				scope.bootstrapClass = 'default';
+				scope.iconClass = 'glyphicon-time';
+
+				if(scope.type === 'source'){
+					scope.iconClass = 'glyphicon-save';
+					scope.bootstrapClass = 'info';
+				}
 
 				if(scope.type === 'output'){
 					scope.iconClass = 'glyphicon-stats';
 					scope.bootstrapClass = 'success';
 				}
-				if(scope.type === 'processing'){
+				if(scope.type === 'utility'){
 					scope.iconClass = 'glyphicon-cog';
 					scope.bootstrapClass = 'warning';
 				}
@@ -898,6 +935,8 @@ angular.module('stage').factory('Jsplumb', [
 
 'use strict';
 
+// todo - add scheduler validation in
+
 angular.module('stage').factory('Networkvalidator', [
 	function() {
 
@@ -935,7 +974,7 @@ angular.module('stage').factory('Networkvalidator', [
 				// check that all sources are connected to something
 				_(slabsList).each(function(item){
 
-					if(item.type === 'api') {
+					if(item.type === 'source') {
 
 						var dependencyFound = false;
 						_(usedSources).each(function(source){

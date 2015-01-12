@@ -11,7 +11,16 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		// this sets the state and loads the sidebar into the stage view.
 		$state.go('stage.sidebar');
 
-		vm.slabs 									= [];
+		var scheduler = {
+			id:'scheduler',
+			guid:'scheduler',
+			name:'scheduler',
+			type:'scheduler',
+			left:'50px',
+			top:'50px'
+		};
+
+		vm.slabs 									= [scheduler];
 		vm.iframeSrc 							= '';
 		vm.currentlyOpenSlab			= '';
 		vm.settingsPageVisible 		= false;
@@ -25,6 +34,26 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 
 		////////////
+
+
+		function init(){
+
+			setTimeout(function(){
+
+
+
+				var inConnectorsArray 		= [];
+				var outConnectorsArray		= Jsplumb.getOutConnectors();
+
+				Jsplumb.addEndPoints(jsPlumbInstance, 'scheduler', outConnectorsArray, inConnectorsArray);
+
+				// make slabs draggable
+				jsPlumbInstance.draggable(jsPlumb.getSelector('.stage-container .panel'), { grid: [20, 20] });
+
+
+			}, 500);
+
+		}
 
 
 		function openViewTab(viewId){
@@ -192,8 +221,8 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 					id						:slabID,
 					type					:slabType,
 					name					:slabName,
-					left					:left,
-					top						:top,
+					left					:left+'px',
+					top						:top+'px',
 					settings			:{},
 					dependencies 	:[]
 				};
@@ -241,6 +270,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			$scope.$digest();
 		};
 
+		init();
 
 	}
 

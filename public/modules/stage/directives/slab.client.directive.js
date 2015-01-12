@@ -7,14 +7,21 @@ angular.module('stage').directive('slab', [
 			restrict: 'E',
 			link: function postLink(scope, element, attrs) {
 
-				scope.bootstrapClass = 'info';
-				scope.iconClass = 'glyphicon-save';
+				scope.hideDelete = scope.type === 'scheduler';
+
+				scope.bootstrapClass = 'default';
+				scope.iconClass = 'glyphicon-time';
+
+				if(scope.type === 'source'){
+					scope.iconClass = 'glyphicon-save';
+					scope.bootstrapClass = 'info';
+				}
 
 				if(scope.type === 'output'){
 					scope.iconClass = 'glyphicon-stats';
 					scope.bootstrapClass = 'success';
 				}
-				if(scope.type === 'processing'){
+				if(scope.type === 'utility'){
 					scope.iconClass = 'glyphicon-cog';
 					scope.bootstrapClass = 'warning';
 				}
