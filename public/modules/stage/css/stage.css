@@ -24,6 +24,10 @@
     opacity:0.5;
 }
 
+.stageWrapper .titleField {
+    padding:10px;
+}
+
 .stageWrapper .slab {
     position:absolute;
     width:180px

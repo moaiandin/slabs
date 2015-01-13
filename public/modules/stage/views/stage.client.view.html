@@ -9,6 +9,13 @@
 
 		<div id="stage-container" class="stage-container stageWrapper" data-ng-class="{darken:stageController.settingsPageVisible}">
 
+
+			<div class="titleField">
+				<div class="input-group">
+					<input data-ng-model="stageController.title" type="text" class="form-control" placeholder="Network Title">
+				</div>
+			</div>
+
 			<slab data-ng-repeat="slab in stageController.slabs"
 				  id="slab.id"
 				  guid="slab.guid"
