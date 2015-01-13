@@ -32,11 +32,11 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServi
 
 		function makeSlabsDraggable(){
 
-			console.log(' _ _ making draggable');
+			//console.log(' _ _ making draggable');
 
 			var run = function(){
-				console.log(' _ making draggable');
-				console.log($('.slab-list').children());
+				//console.log(' _ making draggable');
+				//console.log($('.slab-list').children());
 				$('.slab-list .slab-item').draggable({helper:'clone'});
 			};
 

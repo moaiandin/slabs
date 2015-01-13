@@ -1,0 +1,25 @@
+<section class="container-fluid" >
+
+	<table class="table">
+
+		<caption>recent networks</caption>
+
+		<thead>
+			<tr>
+				<td>Name</td>
+				<td>Created</td>
+				<td>Actions</td>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr data-ng-repeat="item in ctrl.list">
+				<td>{{item.title}}</td>
+				<td>{{item.created | date:'medium'}} </td>
+				<td><button class="btn btn-primary" data-ng-click="ctrl.openNetwork({item:item})">OPEN</button></td>
+			</tr>
+		</tbody>
+
+	</table>
+
+</section>

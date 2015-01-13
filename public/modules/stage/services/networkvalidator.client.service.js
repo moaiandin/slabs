@@ -7,17 +7,25 @@ angular.module('stage').factory('Networkvalidator', [
 
 		var Errors = {
 			NO_SLABS : 'There doesn\'t seem to be any slabs on the stage',
-			DISCONNECTED_SLAB : 'A Slab seems to be "floating" - all slabs need to have at least 1 connection, please check : '
+			DISCONNECTED_SLAB : 'A Slab seems to be "floating", please check : ',
+			NO_TITLE : 'Your network must have a title'
 		};
 
 		// Public API
 		return {
 
-			validate: function(slabsList) {
+			validate: function(title, slabsList) {
 
 				var valid = true;
 				var errors = [];
 				var usedSources = [];
+
+
+				// check there is a title
+				if(!title || title === ''){
+					errors.push(Errors.NO_TITLE);
+				}
+
 
 				// check that there are slabs on the stage
 				if(slabsList.length === 0){
@@ -43,7 +51,7 @@ angular.module('stage').factory('Networkvalidator', [
 
 						var dependencyFound = false;
 						_(usedSources).each(function(source){
-							if(item.guid === source){
+							if(item.guid === source.guid){
 								dependencyFound = true;
 							}
 						});

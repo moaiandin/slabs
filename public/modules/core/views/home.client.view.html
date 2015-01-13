@@ -1,5 +1,6 @@
-<section data-ng-controller="HomeController" class="full-height">
-	<div class="jumbotron text-center full-height">
+<section data-ng-controller="HomeController as homeController" class="full-height">
+
+	<div class="jumbotron text-center">
 		<div class="row">
 			<p>Welcome to slabs - experiment in data.
 			</p>
@@ -7,8 +8,17 @@
 
 		<div class="row">
 			<p>
-				<a class="btn btn-primary btn-lg" href="/#!/stage">Get started</a>
+				<a class="btn btn-primary btn-lg" href="/#!/stage/">Create a network</a>
 			</p>
 		</div>
 	</div>
+
+
+	<network-list data-ng-if="homeController.showList"
+				  list="homeController.networks"
+				  open-network="homeController.openNetwork(item)"
+				  class="networkList">
+				  </network-list>
+
+
 </section>

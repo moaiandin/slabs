@@ -6,7 +6,7 @@ angular.module('stage').config(['$stateProvider',
 		// Stage state routing
 		$stateProvider
 			.state('stage', {
-				url: '/stage',
+				url: '/stage/:networkID',
 				templateUrl: 'modules/stage/views/stage.client.view.html'
 			})
 			.state('stage.sidebar', {

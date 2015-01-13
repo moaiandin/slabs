@@ -6,22 +6,43 @@
  * Module dependencies.
  */
 var mongoose    = require('mongoose'),
+    errorHandler = require('./errors.server.controller'),
     _           = require('lodash'),
     async       = require('async'),
     Q           = require('q'),
     SlabOutput  = mongoose.model('SlabOutput'),
-    NetworkView = mongoose.model('NetworkView');
+    NetworkView = mongoose.model('NetworkView'),
+    Network     = mongoose.model('Network');
 
 module.exports = function() {
 
     var exports = {};
 
+
+    // run function for individual slabs
+    var run = function(slabObj, dependencies){
+
+        var deferred = Q.defer();
+
+        try{
+            require('./slab-network/slab-network.' + slabObj.type + '.controller.js')
+              .execute(slabObj, dependencies, deferred.resolve);
+        }catch(err){
+            slabObj.error = true;
+            slabObj.result = err;
+            deferred.resolve();
+        }
+
+        return deferred.promise;
+    };
+
+
     var runSlab = function(item, callback, fullList){
 
-        processSlabs(item.dependencies, fullList).then(function(){
+        processSlabs(item.dependencies, fullList).then(function(fullList){
 
-            var dependencies = item.dependencies.map(function(guid){
-                return _.findWhere(fullList, {guid:guid});
+            var dependencies = item.dependencies.map(function(dependencyObject){
+                return _.findWhere(fullList, {guid:dependencyObject.guid});
             });
 
             run(item, dependencies).then(function(){
@@ -40,6 +61,7 @@ module.exports = function() {
             return _.contains(ids, item.guid);
         });
 
+        // this creates a promise loop
         async.eachSeries(slabsToProcess, function(item, callback){
             runSlab(item, callback, fullList);
         }, function(err){
@@ -59,21 +81,40 @@ module.exports = function() {
 
     };
 
-    // run function for individual slabs
-    var run = function(slabObj, dependencies){
+    var startNetworkRun = function(slabs ){
 
         var deferred = Q.defer();
 
-        try{
-            require('./slab-network/slab-network.' + slabObj.type + '.controller.js')
-                .execute(slabObj, dependencies, deferred.resolve);
-        }catch(err){
-            slabObj.error = true;
-            slabObj.result = err;
-            deferred.resolve();
-        }
+        // get only the output slabs
+        var outputSlabs = _.filter(slabs, function (item) {
+            return item.type === 'output';
+        });
+
+        // returns an array of only the ids
+        var outputIDs = _.pluck(outputSlabs, 'guid');
+
+        processSlabs(outputIDs, slabs).then(function (runSlabsList) {
+
+            var outputSlabs = _.where(runSlabsList, { type:'output' });
+
+            // todo - move this into the network view controller
+            var networkViewObject = {
+                outputs : outputSlabs
+            };
+            var networkView = new NetworkView(networkViewObject);
+            networkView.save(function(err, doc){
+
+                deferred.resolve({
+                    status: 'success',
+                    viewId:doc._id
+                });
+
+            });
+
+        });
 
         return deferred.promise;
+
     };
 
 
@@ -83,35 +124,30 @@ module.exports = function() {
     exports.create = function (req, res) {
 
         var slabs = req.body.slabs;
+        var title = req.body.title;
 
         if (slabs.length > 0) {
 
-            // get only the output slabs
-            var outputSlabs = _.filter(slabs, function (item) {
-                return item.type === 'output';
-            });
+            var networkObj = {
+                title : title,
+                slabs : slabs
+            };
 
-            // returns an array of only the ids
-            var outputIDs = _.pluck(outputSlabs, 'guid');
+            // create a new network in the database
+            var network = new Network(networkObj);
+            network.save(function(err, doc){
 
-            processSlabs(outputIDs, slabs).then(function (runSlabsList) {
+                // run the network and return the result
+                startNetworkRun(slabs).then(function(result){
 
-                var outputSlabs = _.where(runSlabsList, { type:'output' });
+                    console.log('in here');
 
-                var networkViewObject = {
-                    outputs : outputSlabs
-                };
-                var networkView = new NetworkView(networkViewObject);
-                networkView.save(function(err, doc){
                     res.status(200);
-                    res.send({
-                        status: 'success',
-                        viewId:doc._id
-                    });
+                    res.send(result);
                 });
 
-
             });
+
 
         } else {
             res.status(400).send({
@@ -149,38 +185,23 @@ module.exports = function() {
      */
     exports.read = function (req, res) {
 
-        var networkId = req.params.networkViewID;
-        NetworkView.findById(networkId, function(err, doc){
+        var networkId = req.params.networkId;
+
+        Network.findById(networkId, function(err, doc){
 
             if(err){
 
                 res.status(400).send({
-                    message: 'invalid id sent - can\'t find a saved slab network view'
+                    message: 'invalid id sent - can\'t find a saved slab network'
                 });
 
             }else{
 
                 res.status(200);
-
-                console.log(doc.outputs);
-                var urlRoot = req.protocol + '://' + req.get('host');
-
-                // set the view settings
-                var isOdd = doc.outputs.length % 2 !== 0;
-                var settings = {
-                    isOdd : isOdd
-                };
-
-                var options = { root:urlRoot, outputs:doc.outputs, settings:settings };
-                res.render('default-view', options);
+                res.json(doc);
 
             }
         });
-
-
-        return;
-
-
 
     };
 
@@ -190,6 +211,7 @@ module.exports = function() {
     exports.update = function (req, res) {
 
     };
+
 
     /**
      * Delete an Slab network
@@ -202,6 +224,16 @@ module.exports = function() {
      * List of Slab networks
      */
     exports.list = function (req, res) {
+
+        Network.find().sort('-created').select('title created').limit(10).exec(function(err, networks) {
+            if (err) {
+                return res.status(400).send({
+                    message: errorHandler.getErrorMessage(err)
+                });
+            } else {
+                res.json(networks);
+            }
+        });
 
     };
 

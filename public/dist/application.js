@@ -53,6 +53,11 @@ ApplicationConfiguration.registerModule('core');
 'use strict';
 
 // Use application configuration module to register a new module
+ApplicationConfiguration.registerModule('network-list');
+
+'use strict';
+
+// Use application configuration module to register a new module
 ApplicationConfiguration.registerModule('sidebar');
 
 'use strict';
@@ -199,6 +204,7 @@ angular.module('core').controller('HeaderController', ['$scope', 'Authentication
 		$scope.isCollapsed = false;
 		$scope.menu = Menus.getMenu('topbar');
 
+
 		$scope.toggleCollapsibleMenu = function() {
 			$scope.isCollapsed = !$scope.isCollapsed;
 		};
@@ -209,15 +215,52 @@ angular.module('core').controller('HeaderController', ['$scope', 'Authentication
 		});
 	}
 ]);
+
 'use strict';
 
 
-angular.module('core').controller('HomeController', ['$scope', 'Authentication',
-	function($scope, Authentication) {
+angular.module('core').controller('HomeController', ['$scope', 'Authentication','SlabsServices','$state',
+	function($scope, Authentication, SlabsServices, $state) {
+
+		var vm = this;
+
 		// This provides Authentication context.
-		$scope.authentication = Authentication;
+		vm.authentication = Authentication;
+		vm.showList 			= false;
+		vm.networks  			= []; //SlabsServices.network.query();
+		vm.openNetwork    = openNetwork;
+
+		init();
+
+		/////////////
+
+
+		function init(){
+
+			getNetworkList();
+
+		}
+
+		function getNetworkList(){
+
+			SlabsServices.network.query(function(networks){
+				if(networks && networks.length > 0){
+					vm.showList 	= true;
+					vm.networks		= networks;
+				}
+			});
+
+		}
+
+		function openNetwork(item){
+			console.log('openNetwork');
+			console.log(item);
+			$state.go('stage', {networkID:item._id});
+		}
+
 	}
 ]);
+
 'use strict';
 
 //Menu service used for managing  menus
@@ -391,12 +434,42 @@ angular.module('stage').factory('SlabsServices', ['$resource',
 
 		// Public API
 		return {
-			network			 : $resource('/networkview/'),
+			network			 : $resource('/network/'),
+			getNetwork	 : $resource('/network/:networkID'),
 			slabTypes		 : $resource('/slab/types'),
 			slab 				 : $resource('/slab/:slabType/:slabID'),
 			slabList 		 : $resource('/slab/:slabType')
 		};
 
+	}
+]);
+
+'use strict';
+
+angular.module('network-list').directive('networkList', [
+	function() {
+		return {
+			templateUrl: 'modules/network-list/views/network-list.client.view.html',
+			restrict: 'E',
+			controller: ["$scope", function($scope) {
+
+				var vm = this;
+
+				vm.list = $scope.list;
+
+				//////////
+
+				vm.openNetwork = function(item){
+					$scope.openNetwork(item);
+				};
+
+			}],
+			controllerAs: 'ctrl',
+			scope: {
+				list:'=',
+				openNetwork:'&'
+			}
+		};
 	}
 ]);
 
@@ -434,11 +507,11 @@ angular.module('sidebar').controller('SlabListController', ['$scope','SlabsServi
 
 		function makeSlabsDraggable(){
 
-			console.log(' _ _ making draggable');
+			//console.log(' _ _ making draggable');
 
 			var run = function(){
-				console.log(' _ making draggable');
-				console.log($('.slab-list').children());
+				//console.log(' _ making draggable');
+				//console.log($('.slab-list').children());
 				$('.slab-list .slab-item').draggable({helper:'clone'});
 			};
 
@@ -483,7 +556,7 @@ angular.module('stage').config(['$stateProvider',
 		// Stage state routing
 		$stateProvider
 			.state('stage', {
-				url: '/stage',
+				url: '/stage/:networkID',
 				templateUrl: 'modules/stage/views/stage.client.view.html'
 			})
 			.state('stage.sidebar', {
@@ -495,28 +568,23 @@ angular.module('stage').config(['$stateProvider',
 'use strict';
 
 // todo - tests for this class.
+// TODO - on drag/drop resave top & left values
+// TODO -
 
-angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce','Jsplumb','Networkvalidator','ngNotify',
+angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce','Jsplumb','Networkvalidator','ngNotify','$stateParams','$q',
 
-	function($scope, $state, SlabsServices, $sce, Jsplumb, Networkvalidator, ngNotify ) {
+	function($scope, $state, SlabsServices, $sce, Jsplumb, Networkvalidator, ngNotify, $stateParams, $q ) {
 
 		var vm = this;
 
 		// this sets the state and loads the sidebar into the stage view.
 		$state.go('stage.sidebar');
 
-		var ticker = {
-			id:'ticker',
-			guid:'ticker',
-			name:'ticker',
-			type:'ticker',
-			left:'50px',
-			top:'50px'
-		};
-
-		vm.slabs 									= [ticker];
+		vm.networkID  						= $stateParams.networkID;
+		vm.slabs 									= [];
 		vm.iframeSrc 							= '';
 		vm.currentlyOpenSlab			= '';
+		vm.title  								= '';
 		vm.settingsPageVisible 		= false;
 		vm.runSlabNetwork 				= runSlabNetwork;
 		vm.openSlabSettings 			= openSlabSettings;
@@ -524,29 +592,93 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 		vm.viewId 								= null;
 		vm.removeSlab							= removeSlab;
 
+
 		var jsPlumbInstance  			= Jsplumb.getInstance();
 
+		init();
 
 		////////////
 
 
 		function init(){
 
+			var prom = getInitialArray();
+
+			prom.then(function(slabs){
+				vm.slabs = slabs;
+				addPlumbing();
+			});
+		}
+
+		function getInitialArray(){
+
+			var defer = $q.defer();
+
+			var left = ( $('.stage').width() / 2 ) - 90;
+			var ticker = { id:'ticker', guid:'ticker', name:'ticker', type:'ticker', left:left+'px', top:'50px', slabsIn:0, slabsOut:3, dependencies:[] };
+
+			if(vm.networkID === ''){
+				defer.resolve([ticker]);
+			}else{
+
+				// if a networkID is passed in we should return the network from the server
+				SlabsServices.getNetwork.get({networkID:vm.networkID})
+					.$promise.then(function(network){
+						vm.title = network.title;
+						defer.resolve(network.slabs);
+					});
+			}
+
+			return defer.promise;
+
+		}
+
+		// add plumbing to the slabs loaded in
+		function addPlumbing(){
+
 			setTimeout(function(){
 
-				var inConnectorsArray 		= [];
-				var outConnectorsArray		= Jsplumb.getOutConnectors();
+				_.each(vm.slabs, function(item){
 
-				Jsplumb.addEndPoints(jsPlumbInstance, 'ticker', outConnectorsArray, inConnectorsArray);
+					console.log(item);
+
+					var inConnectorsArray 		= Jsplumb.getInConnectors();
+					var outConnectorsArray		= Jsplumb.getOutConnectors();
+
+					inConnectorsArray.length 	= item.slabsIn;
+					outConnectorsArray.length = item.slabsOut;
+
+					Jsplumb.addEndPoints(jsPlumbInstance, item.guid, outConnectorsArray, inConnectorsArray);
+
+					console.log(item.dependencies);
+
+					if(item.dependencies && item.dependencies.length > 0){
+
+
+						_.each(item.dependencies, function(id){
+
+							var inConns 		= Jsplumb.getInConnectors();
+							var outConns		= Jsplumb.getOutConnectors();
+							var inID 				= item.guid+inConns[0];
+							var outID 			= id+outConns[0];
+
+							console.log(id);
+							jsPlumbInstance.connect({uuids:[inID, outID], editable:true});
+
+						});
+
+					}
+
+
+				});
 
 				// make slabs draggable
 				jsPlumbInstance.draggable(jsPlumb.getSelector('.stage-container .panel'), { grid: [20, 20] });
 
 
-			}, 500);
+			}, 50);
 
 		}
-
 
 		function openViewTab(viewId){
 
@@ -557,7 +689,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		function validateNetwork(){
 
-			var errors = Networkvalidator.validate(vm.slabs);
+			var errors = Networkvalidator.validate(vm.title, vm.slabs);
 
 			if(errors){
 				ngNotify.set(errors[0], 'error');
@@ -568,6 +700,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		}
 
+		// runs the slabs network
 		function runSlabNetwork(){
 
 			if(validateNetwork() === false){
@@ -576,15 +709,16 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			}
 
 			var networkObject = {
-				title : 'sample network',
+				title : vm.title,
 				slabs : vm.slabs
 			};
 
-			console.log('calling runSlabNetwork');
+			console.log('saving SlabNetwork');
+			console.log(networkObject);
 
 			SlabsServices.network.save({}, networkObject,
 				function(resp){
-				  console.log('network success!!');
+				  console.log('network saved!!');
 					console.log(resp);
 					vm.viewId = resp.viewId;
 			},function(resp){
@@ -594,6 +728,7 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		}
 
+		// opens a network view page
 		function viewOutput(){
 			openViewTab(vm.viewId);
 		}
@@ -688,15 +823,33 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 
 		}
 
+		function updateSlabPosition(guid, left, top){
+
+			console.log(guid);
+			console.log(vm.slabs);
+
+			var slab = _.findWhere(vm.slabs, {guid:guid} );
+			console.log(slab);
+			slab.left = left+'px';
+			slab.top = top+'px';
+
+		}
+
 		$('.stage').droppable({
 
 			drop: function( event, ui ) {
 
 				var item 			= ui.helper[0];
+				var left			= ui.position.left;
+				var top				= ui.position.top;
 
 				// is slab dropped from the stage or sidebar list.
-				var isPanel		= item.classList.contains('panel') === true ? true : false;
+				var isPanel		= item.classList.contains('panel') === true;
 				if( isPanel ){
+
+					var panel_guid = item.getAttribute('id');
+					updateSlabPosition(panel_guid, left, top);
+
 					return;
 				}
 
@@ -705,8 +858,10 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 				var slabType  = item.getAttribute('data-slab-type');
 				var slabName  = item.getAttribute('data-slab-name');
 				var guid 			= 'slab_'+Date.now();
-				var left			= ui.position.left;
-				var top				= ui.position.top - 50; // the 50 is the header
+				var slabsIn		= item.getAttribute('data-slab-in');
+				var slabsOut  = item.getAttribute('data-slab-out');
+				top -= 50; // the 50 is the header
+
 
 				var slab = {
 					guid  				:guid,
@@ -716,16 +871,14 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 					left					:left+'px',
 					top						:top+'px',
 					settings			:{},
-					dependencies 	:[]
+					dependencies 	:[],
+					slabsIn				: slabsIn,
+					slabsOut  		: slabsOut
 				};
 
 				// add slab to slab network
 				vm.slabs.push(slab);
 				$scope.$digest();
-
-				// get number of connections in/out
-				var slabsIn		= item.getAttribute('data-slab-in');
-				var slabsOut  = item.getAttribute('data-slab-out');
 
 				var inConnectorsArray 		= Jsplumb.getInConnectors();
 				var outConnectorsArray		= Jsplumb.getOutConnectors();
@@ -762,7 +915,6 @@ angular.module('stage').controller('StageController', ['$scope','$state','SlabsS
 			$scope.$digest();
 		};
 
-		init();
 
 	}
 
@@ -940,17 +1092,25 @@ angular.module('stage').factory('Networkvalidator', [
 
 		var Errors = {
 			NO_SLABS : 'There doesn\'t seem to be any slabs on the stage',
-			DISCONNECTED_SLAB : 'A Slab seems to be "floating" - all slabs need to have at least 1 connection, please check : '
+			DISCONNECTED_SLAB : 'A Slab seems to be "floating", please check : ',
+			NO_TITLE : 'Your network must have a title'
 		};
 
 		// Public API
 		return {
 
-			validate: function(slabsList) {
+			validate: function(title, slabsList) {
 
 				var valid = true;
 				var errors = [];
 				var usedSources = [];
+
+
+				// check there is a title
+				if(!title || title === ''){
+					errors.push(Errors.NO_TITLE);
+				}
+
 
 				// check that there are slabs on the stage
 				if(slabsList.length === 0){
