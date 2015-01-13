@@ -571,352 +571,354 @@ angular.module('stage').config(['$stateProvider',
 // TODO - on drag/drop resave top & left values
 // TODO -
 
-angular.module('stage').controller('StageController', ['$scope','$state','SlabsServices','$sce','Jsplumb','Networkvalidator','ngNotify','$stateParams','$q',
+angular.module('stage').controller('StageController', ['$scope', '$state', 'SlabsServices', '$sce', 'Jsplumb', 'Networkvalidator', 'ngNotify', '$stateParams', '$q',
 
-	function($scope, $state, SlabsServices, $sce, Jsplumb, Networkvalidator, ngNotify, $stateParams, $q ) {
+  function ($scope, $state, SlabsServices, $sce, Jsplumb, Networkvalidator, ngNotify, $stateParams, $q) {
 
-		var vm = this;
+    var vm = this;
 
-		// this sets the state and loads the sidebar into the stage view.
-		$state.go('stage.sidebar');
+    // this sets the state and loads the sidebar into the stage view.
+    $state.go('stage.sidebar');
 
-		vm.networkID  						= $stateParams.networkID;
-		vm.slabs 									= [];
-		vm.iframeSrc 							= '';
-		vm.currentlyOpenSlab			= '';
-		vm.title  								= '';
-		vm.settingsPageVisible 		= false;
-		vm.runSlabNetwork 				= runSlabNetwork;
-		vm.openSlabSettings 			= openSlabSettings;
-		vm.viewOutput 						= viewOutput;
-		vm.viewId 								= null;
-		vm.removeSlab							= removeSlab;
+    vm.networkID = $stateParams.networkID;
+    vm.slabs = [];
+    vm.iframeSrc = '';
+    vm.currentlyOpenSlab = '';
+    vm.title = '';
+    vm.settingsPageVisible = false;
+    vm.runSlabNetwork = runSlabNetwork;
+    vm.openSlabSettings = openSlabSettings;
+    vm.viewOutput = viewOutput;
+    vm.viewId = null;
+    vm.removeSlab = removeSlab;
 
 
-		var jsPlumbInstance  			= Jsplumb.getInstance();
+    var jsPlumbInstance = Jsplumb.getInstance();
 
-		init();
+    init();
 
-		////////////
 
+    ////////////
 
-		function init(){
 
-			var prom = getInitialArray();
+    function init() {
 
-			prom.then(function(slabs){
-				vm.slabs = slabs;
-				addPlumbing();
-			});
-		}
+      getInitialArray().then(function (slabs) {
+        vm.slabs = slabs;
+        addPlumbing();
+      });
 
-		function getInitialArray(){
+    }
 
-			var defer = $q.defer();
+    function getInitialArray() {
 
-			var left = ( $('.stage').width() / 2 ) - 90;
-			var ticker = { id:'ticker', guid:'ticker', name:'ticker', type:'ticker', left:left+'px', top:'50px', slabsIn:0, slabsOut:3, dependencies:[] };
+      var defer = $q.defer();
 
-			if(vm.networkID === ''){
-				defer.resolve([ticker]);
-			}else{
+      var left = ( $('.stage').width() / 2 ) - 90;
+      var ticker = {
+        id: 'ticker',
+        guid: 'ticker',
+        name: 'ticker',
+        type: 'ticker',
+        left: left + 'px',
+        top: '50px',
+        slabsIn: 0,
+        slabsOut: 3,
+        dependencies: []
+      };
 
-				// if a networkID is passed in we should return the network from the server
-				SlabsServices.getNetwork.get({networkID:vm.networkID})
-					.$promise.then(function(network){
-						vm.title = network.title;
-						defer.resolve(network.slabs);
-					});
-			}
+      if (vm.networkID === '') {
+        defer.resolve([ticker]);
+      } else {
 
-			return defer.promise;
+        // if a networkID is passed in we should return the network from the server
+        SlabsServices.getNetwork.get({networkID: vm.networkID})
+          .$promise.then(function (network) {
+            vm.title = network.title;
+            defer.resolve(network.slabs);
+          });
+      }
 
-		}
+      return defer.promise;
 
-		// add plumbing to the slabs loaded in
-		function addPlumbing(){
+    }
 
-			setTimeout(function(){
+    // add plumbing to the slabs loaded in
+    function addPlumbing() {
 
-				_.each(vm.slabs, function(item){
+      setTimeout(function () {
 
-					console.log(item);
+        _.each(vm.slabs, function (item) {
 
-					var inConnectorsArray 		= Jsplumb.getInConnectors();
-					var outConnectorsArray		= Jsplumb.getOutConnectors();
+          var inConnectorsArray = Jsplumb.getInConnectors();
+          var outConnectorsArray = Jsplumb.getOutConnectors();
 
-					inConnectorsArray.length 	= item.slabsIn;
-					outConnectorsArray.length = item.slabsOut;
+          inConnectorsArray.length = item.slabsIn;
+          outConnectorsArray.length = item.slabsOut;
 
-					Jsplumb.addEndPoints(jsPlumbInstance, item.guid, outConnectorsArray, inConnectorsArray);
+          Jsplumb.addEndPoints(jsPlumbInstance, item.guid, outConnectorsArray, inConnectorsArray);
 
-					console.log(item.dependencies);
+          if (item.dependencies && item.dependencies.length > 0) {
 
-					if(item.dependencies && item.dependencies.length > 0){
+            _.each(item.dependencies, function (dependencyObject) {
 
+              var inID = dependencyObject.sourceAnchor;
+              var outID = dependencyObject.targetAnchor;
 
-						_.each(item.dependencies, function(id){
+              jsPlumbInstance.connect({uuids: [inID, outID], editable: true});
 
-							var inConns 		= Jsplumb.getInConnectors();
-							var outConns		= Jsplumb.getOutConnectors();
-							var inID 				= item.guid+inConns[0];
-							var outID 			= id+outConns[0];
+            });
 
-							console.log(id);
-							jsPlumbInstance.connect({uuids:[inID, outID], editable:true});
+          }
 
-						});
 
-					}
+        });
 
+        // make slabs draggable
+        jsPlumbInstance.draggable(jsPlumb.getSelector('.stage-container .panel'), {grid: [20, 20]});
 
-				});
 
-				// make slabs draggable
-				jsPlumbInstance.draggable(jsPlumb.getSelector('.stage-container .panel'), { grid: [20, 20] });
+      }, 50);
 
+    }
 
-			}, 50);
+    function openViewTab(viewId) {
 
-		}
+      var viewURL = '/networkview/' + viewId;
+      window.open(viewURL);
 
-		function openViewTab(viewId){
+    }
 
-			var viewURL = '/networkview/'+viewId;
-			window.open(viewURL);
+    function validateNetwork() {
 
-		}
+      var errors = Networkvalidator.validate(vm.title, vm.slabs);
 
-		function validateNetwork(){
+      if (errors) {
+        ngNotify.set(errors[0], 'error');
+        return false;
+      } else {
+        return true;
+      }
 
-			var errors = Networkvalidator.validate(vm.title, vm.slabs);
+    }
 
-			if(errors){
-				ngNotify.set(errors[0], 'error');
-				return false;
-			}else{
-				return true;
-			}
+    // runs the slabs network
+    function runSlabNetwork() {
 
-		}
+      if (validateNetwork() === false) {
+        console.log('validation error');
+        return;
+      }
 
-		// runs the slabs network
-		function runSlabNetwork(){
+      var networkObject = {
+        title: vm.title,
+        slabs: vm.slabs
+      };
 
-			if(validateNetwork() === false){
-				console.log('validation error');
-				return;
-			}
+      console.log('saving SlabNetwork');
+      console.log(networkObject);
 
-			var networkObject = {
-				title : vm.title,
-				slabs : vm.slabs
-			};
+      SlabsServices.network.save({}, networkObject,
+        function (resp) {
+          console.log('network saved!!');
+          console.log(resp);
+          vm.viewId = resp.viewId;
+        }, function (resp) {
+          console.log('network fail...');
+          console.log(resp);
+        });
 
-			console.log('saving SlabNetwork');
-			console.log(networkObject);
+    }
 
-			SlabsServices.network.save({}, networkObject,
-				function(resp){
-				  console.log('network saved!!');
-					console.log(resp);
-					vm.viewId = resp.viewId;
-			},function(resp){
-					console.log('network fail...');
-					console.log(resp);
-			});
+    // opens a network view page
+    function viewOutput() {
+      openViewTab(vm.viewId);
+    }
 
-		}
+    // open the slab settings window.
+    function openSlabSettings(slab) {
 
-		// opens a network view page
-		function viewOutput(){
-			openViewTab(vm.viewId);
-		}
+      SlabsServices.slab.get({slabType: slab.type, slabID: slab.id}, function (obj) {
 
- 		// open the slab settings window.
-		function openSlabSettings(slab){
+        if (obj.url) {
+          vm.currentlyOpenSlab = slab.guid;
+          vm.settingsPageVisible = true;
+          vm.iframeSrc = obj.url;
+        } else {
+          console.log('error loading settings file');
+        }
 
-			SlabsServices.slab.get({slabType:slab.type, slabID:slab.id}, function(obj){
+      });
 
-				if(obj.url){
-					vm.currentlyOpenSlab = slab.guid;
-					vm.settingsPageVisible = true;
-					vm.iframeSrc = obj.url;
-				}else{
-					console.log('error loading settings file');
-				}
+    }
 
-			});
+    // remove a slab from the stage
+    function removeSlab(slab) {
 
-		}
+      var inConnectorsArray = Jsplumb.getInConnectors();
+      var outConnectorsArray = Jsplumb.getOutConnectors();
 
-		// remove a slab from the stage
-		function removeSlab(slab){
+      Jsplumb.removeEndPoints(jsPlumbInstance, slab.guid, outConnectorsArray, inConnectorsArray);
 
-			var inConnectorsArray 		= Jsplumb.getInConnectors();
-			var outConnectorsArray		= Jsplumb.getOutConnectors();
+      vm.slabs = _.reject(vm.slabs, function (item) {
+        return item.guid === slab.guid;
+      });
 
-			Jsplumb.removeEndPoints(jsPlumbInstance, slab.guid, outConnectorsArray, inConnectorsArray);
+    }
 
-			vm.slabs = _.reject(vm.slabs, function(item){
-				return item.guid === slab.guid;
-			});
+    // update the slabs array with the new connection.
+    function updateConnections(sourceId, targetId, remove, sourceAnchor, targetAnchor) {
 
-		}
+      //console.dir(sourceId, targetId, remove);
 
-		// update the slabs array with the new connection.
-		function updateConnections(sourceId, targetId, remove){
+      _(vm.slabs).each(function (item) {
 
-			console.dir(sourceId, targetId, remove);
+        if (item.guid === targetId) {
 
-			_(vm.slabs).each(function(item){
+          if (remove !== true) {
 
-				if(item.guid === targetId){
+            item.dependencies = _.reject(item.dependencies, function (item) {
+              return item.id === sourceId;
+            });
 
-					if(remove !== true){
-						item.dependencies = _.without(item.dependencies, sourceId);
-						item.dependencies.push(sourceId);
-					}else{
-						item.dependencies = _.without(item.dependencies, sourceId);
-					}
+            var dependencyObject = {
+              guid: item.guid,
+              sourceAnchor: sourceAnchor,
+              targetAnchor: targetAnchor
+            };
 
-				}
+            item.dependencies.push(dependencyObject);
 
-			});
+          } else {
+            item.dependencies = _.reject(item.dependencies, function (item) {
+              return item.id === sourceId;
+            });
+          }
 
-		}
+        }
 
-		// new connection event handler
-		function newConnection(connection) {
+      });
 
-			/* set the label
-			var targetName = $(connection.target).data('slab-name');
-			var sourceName = $(connection.source).data('slab-name');
-			connection.getOverlay('label').setLabel( sourceName+ ' - ' + targetName);
-			*/
+    }
 
-			// update the slabs array to show the new connection
-			var targetId 	= connection.target.id;
-			var sourceId 	= connection.source.id;
-			console.log(sourceId+ ' is now connected to '+targetId );
-			updateConnections(sourceId, targetId);
+    // dropped connection handler
+    function removeConnection(connection) {
 
-		}
+      // update the slabs array to show the new connection
+      var targetId = connection.target.id;
+      var sourceId = connection.source.id;
+      console.log(sourceId + ' is now NOT connected to ' + targetId);
+      updateConnections(sourceId, targetId, true);
 
-		// dropped connection handler
-		function removeConnection(connection){
+    }
 
-			// update the slabs array to show the new connection
-			var targetId 	= connection.target.id;
-			var sourceId 	= connection.source.id;
-			console.log(sourceId+ ' is now NOT connected to '+targetId );
-			updateConnections(sourceId, targetId, true);
+    function addSettingsToSlabList(data) {
 
-		}
+      var slab = _.findWhere(vm.slabs, {guid: vm.currentlyOpenSlab});
+      slab.settings = data;
 
-		function addSettingsToSlabList (data){
+      //console.dir(vm.slabs);
 
-			var slab = _.findWhere(vm.slabs, { guid:vm.currentlyOpenSlab } );
-			slab.settings = data;
+    }
 
-			console.dir(vm.slabs);
+    function updateSlabPosition(guid, left, top) {
 
-		}
+      var slab = _.findWhere(vm.slabs, {guid: guid});
+      slab.left = left + 'px';
+      slab.top = top + 'px';
 
-		function updateSlabPosition(guid, left, top){
+    }
 
-			console.log(guid);
-			console.log(vm.slabs);
+    $('.stage').droppable({
 
-			var slab = _.findWhere(vm.slabs, {guid:guid} );
-			console.log(slab);
-			slab.left = left+'px';
-			slab.top = top+'px';
+      drop: function (event, ui) {
 
-		}
+        var item = ui.helper[0];
+        var left = ui.position.left;
+        var top = ui.position.top;
 
-		$('.stage').droppable({
+        // is slab dropped from the stage or sidebar list.
+        var isPanel = item.classList.contains('panel') === true;
+        if (isPanel) {
 
-			drop: function( event, ui ) {
+          var panel_guid = item.getAttribute('id');
+          updateSlabPosition(panel_guid, left, top);
 
-				var item 			= ui.helper[0];
-				var left			= ui.position.left;
-				var top				= ui.position.top;
+          return;
+        }
 
-				// is slab dropped from the stage or sidebar list.
-				var isPanel		= item.classList.contains('panel') === true;
-				if( isPanel ){
+        // slab settings
+        var slabID = item.getAttribute('data-slab-id');
+        var slabType = item.getAttribute('data-slab-type');
+        var slabName = item.getAttribute('data-slab-name');
+        var guid = 'slab_' + Date.now();
+        var slabsIn = item.getAttribute('data-slab-in');
+        var slabsOut = item.getAttribute('data-slab-out');
+        top -= 50; // the 50 is the header
 
-					var panel_guid = item.getAttribute('id');
-					updateSlabPosition(panel_guid, left, top);
 
-					return;
-				}
+        var slab = {
+          guid: guid,
+          id: slabID,
+          type: slabType,
+          name: slabName,
+          left: left + 'px',
+          top: top + 'px',
+          settings: {},
+          dependencies: [],
+          slabsIn: slabsIn,
+          slabsOut: slabsOut
+        };
 
-				// slab settings
-				var slabID 		= item.getAttribute('data-slab-id');
-				var slabType  = item.getAttribute('data-slab-type');
-				var slabName  = item.getAttribute('data-slab-name');
-				var guid 			= 'slab_'+Date.now();
-				var slabsIn		= item.getAttribute('data-slab-in');
-				var slabsOut  = item.getAttribute('data-slab-out');
-				top -= 50; // the 50 is the header
+        // add slab to slab network
+        vm.slabs.push(slab);
+        $scope.$digest();
 
+        var inConnectorsArray = Jsplumb.getInConnectors();
+        var outConnectorsArray = Jsplumb.getOutConnectors();
 
-				var slab = {
-					guid  				:guid,
-					id						:slabID,
-					type					:slabType,
-					name					:slabName,
-					left					:left+'px',
-					top						:top+'px',
-					settings			:{},
-					dependencies 	:[],
-					slabsIn				: slabsIn,
-					slabsOut  		: slabsOut
-				};
+        inConnectorsArray.length = slabsIn;
+        outConnectorsArray.length = slabsOut;
 
-				// add slab to slab network
-				vm.slabs.push(slab);
-				$scope.$digest();
+        Jsplumb.addEndPoints(jsPlumbInstance, guid, outConnectorsArray, inConnectorsArray);
 
-				var inConnectorsArray 		= Jsplumb.getInConnectors();
-				var outConnectorsArray		= Jsplumb.getOutConnectors();
+        // listen for new connections
+        jsPlumbInstance.bind('connection', function (connInfo, originalEvent) {
 
-				inConnectorsArray.length = slabsIn;
-				outConnectorsArray.length = slabsOut;
+          // update the slabs array to show the new connection
+          var targetId = connInfo.connection.target.id;
+          var sourceId = connInfo.connection.source.id;
+          var sourceAnchor = sourceId + '_' + connInfo.sourceEndpoint.anchor.type;
+          var targetAnchor = targetId + '_' + connInfo.targetEndpoint.anchor.type;
 
-				Jsplumb.addEndPoints(jsPlumbInstance, guid, outConnectorsArray, inConnectorsArray);
+          updateConnections(sourceId, targetId, false, sourceAnchor, targetAnchor);
 
-				// listen for new connections
-				jsPlumbInstance.bind('connection', function(connInfo, originalEvent) {
-					newConnection(connInfo.connection);
-				});
+        });
 
-				// listen for dropped connections
-				jsPlumbInstance.bind('connectionDetached', function(connInfo, originalEvent) {
-					removeConnection(connInfo.connection);
-				});
+        // listen for dropped connections
+        jsPlumbInstance.bind('connectionDetached', function (connInfo, originalEvent) {
+          removeConnection(connInfo.connection);
+        });
 
-				// make slabs draggable
-				jsPlumbInstance.draggable(jsPlumb.getSelector('.stage-container .panel'), { grid: [20, 20] });
+        // make slabs draggable
+        jsPlumbInstance.draggable(jsPlumb.getSelector('.stage-container .panel'), {grid: [20, 20]});
 
-			}
+      }
 
-		});
+    });
 
 
-		// add submit data function
-		window.submitSlabData = function(data){
+    // add submit data function
+    window.submitSlabData = function (data) {
 
-			addSettingsToSlabList(data);
+      addSettingsToSlabList(data);
 
-			vm.settingsPageVisible = false;
-			$scope.$digest();
-		};
+      vm.settingsPageVisible = false;
+      $scope.$digest();
+    };
 
 
-	}
+  }
 
 ]);
 
@@ -969,118 +971,117 @@ angular.module('stage').directive('slab', [
 
 angular.module('stage').factory('Jsplumb', [
 
-	function() {
+  function () {
 
-		var connectorPaintStyle = {
-			lineWidth:3,
-			strokeStyle:'#439a46',
-			joinstyle:'round',
-			outlineColor:'white',
-			outlineWidth:2
-		};
+    var connectorPaintStyle = {
+      lineWidth: 3,
+      strokeStyle: '#439a46',
+      joinstyle: 'round',
+      outlineColor: 'white',
+      outlineWidth: 2
+    };
 
-		var connectorHoverStyle = {
-			lineWidth:2,
-			strokeStyle:'#216477',
-			outlineWidth:2,
-			outlineColor:'white'
-		};
+    var connectorHoverStyle = {
+      lineWidth: 2,
+      strokeStyle: '#216477',
+      outlineWidth: 2,
+      outlineColor: 'white'
+    };
 
-		var endpointHoverStyle = {
-			fillStyle:'#216477',
-			strokeStyle:'#216477'
-		};
+    var endpointHoverStyle = {
+      fillStyle: '#216477',
+      strokeStyle: '#216477'
+    };
 
-		var sourceEndpoint = {
-			endpoint:'Dot',
-			paintStyle:{
-				strokeStyle:'#9c27b0',
-				fillStyle:'#ffffff',
-				radius:4,
-				lineWidth:3
-			},
-			isSource:true,
-			connector:[ 'Bezier', { stub:[40, 60], gap:10, cornerRadius:5, alwaysRespectStubs:true } ],
-			connectorStyle:connectorPaintStyle,
-			hoverPaintStyle:endpointHoverStyle,
-			connectorHoverStyle:connectorHoverStyle,
-			dragOptions:{}
-		};
+    var sourceEndpoint = {
+      endpoint: 'Dot',
+      paintStyle: {
+        strokeStyle: '#9c27b0',
+        fillStyle: '#ffffff',
+        radius: 4,
+        lineWidth: 3
+      },
+      isSource: true,
+      connector: ['Bezier', {stub: [40, 60], gap: 10, cornerRadius: 5, alwaysRespectStubs: true}],
+      connectorStyle: connectorPaintStyle,
+      hoverPaintStyle: endpointHoverStyle,
+      connectorHoverStyle: connectorHoverStyle,
+      dragOptions: {}
+    };
 
-		// the definition of target endpoints (will appear when the user drags a connection)
-		var targetEndpoint = {
-			endpoint:'Dot',
-			paintStyle:{ strokeStyle:'#439a46',radius:4, fillStyle:'#ffffff',lineWidth:3 },
-			hoverPaintStyle:endpointHoverStyle,
-			maxConnections:-1,
-			dropOptions:{ hoverClass:'hover', activeClass:'active' },
-			isTarget:true
-		};
-
-
-		// Public API
-		return {
-
-			getInstance: function() {
-				return jsPlumb.getInstance({
-					// default drag options
-					DragOptions : { cursor: 'pointer', zIndex:2000 },
-					// the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text; in this
-					// case it returns the 'labelText' member that we set on each connection in the 'init' method below.
-					/*ConnectionOverlays : [
-						[ 'Label', {
-							location:0.5,
-							id:'label',
-							cssClass:'aLabel'
-						}]
-					],*/
-					Container:'stage-container'
-				});
-			},
-
-			getInConnectors: function (){
-				var inConnectorsArray 		= ['TopCenter', 'TopLeft', 'TopRight'];
-				return inConnectorsArray;
-			},
-
-			getOutConnectors: function (){
-				var outConnectorsArray 		= ['BottomCenter', 'BottomLeft', 'BottomRight'];
-				return outConnectorsArray;
-			},
-
-			removeEndPoints: function(instance, endpointId, sourceAnchors, targetAnchors){
-
-				for (var i = 0; i < sourceAnchors.length; i++) {
-					var sourceUUID = endpointId + sourceAnchors[i];
-					instance.deleteEndpoint(sourceUUID);
-				}
-				for (var j = 0; j < targetAnchors.length; j++) {
-					var targetUUID = endpointId + targetAnchors[j];
-					instance.deleteEndpoint(targetUUID);
-				}
-
-				instance.detachAllConnections(endpointId);
-
-			},
-
-			addEndPoints: function(instance, toId, sourceAnchors, targetAnchors) {
-
-				for (var i = 0; i < sourceAnchors.length; i++) {
-					var sourceUUID = toId + sourceAnchors[i];
-					instance.addEndpoint(toId, sourceEndpoint, { anchor:sourceAnchors[i], uuid:sourceUUID });
-				}
-				for (var j = 0; j < targetAnchors.length; j++) {
-					var targetUUID = toId + targetAnchors[j];
-					instance.addEndpoint(toId, targetEndpoint, { anchor:targetAnchors[j], uuid:targetUUID });
-				}
-
-			}
+    // the definition of target endpoints (will appear when the user drags a connection)
+    var targetEndpoint = {
+      endpoint: 'Dot',
+      paintStyle: {strokeStyle: '#439a46', radius: 4, fillStyle: '#ffffff', lineWidth: 3},
+      hoverPaintStyle: endpointHoverStyle,
+      maxConnections: -1,
+      dropOptions: {hoverClass: 'hover', activeClass: 'active'},
+      isTarget: true
+    };
 
 
+    // Public API
+    return {
 
-		};
+      getInstance: function () {
+        return jsPlumb.getInstance({
+          // default drag options
+          DragOptions: {cursor: 'pointer', zIndex: 2000},
+          // the overlays to decorate each connection with.  note that the label overlay uses a function to generate the label text; in this
+          // case it returns the 'labelText' member that we set on each connection in the 'init' method below.
+          /*ConnectionOverlays : [
+           [ 'Label', {
+           location:0.5,
+           id:'label',
+           cssClass:'aLabel'
+           }]
+           ],*/
+          Container: 'stage-container'
+        });
+      },
 
-	}
+      getInConnectors: function () {
+        var inConnectorsArray = ['TopCenter', 'TopLeft', 'TopRight'];
+        return inConnectorsArray;
+      },
+
+      getOutConnectors: function () {
+        var outConnectorsArray = ['BottomCenter', 'BottomLeft', 'BottomRight'];
+        return outConnectorsArray;
+      },
+
+      removeEndPoints: function (instance, endpointId, sourceAnchors, targetAnchors) {
+
+        for (var i = 0; i < sourceAnchors.length; i++) {
+          var sourceUUID = endpointId + sourceAnchors[i];
+          instance.deleteEndpoint(sourceUUID);
+        }
+        for (var j = 0; j < targetAnchors.length; j++) {
+          var targetUUID = endpointId + targetAnchors[j];
+          instance.deleteEndpoint(targetUUID);
+        }
+
+        instance.detachAllConnections(endpointId);
+
+      },
+
+      addEndPoints: function (instance, toId, sourceAnchors, targetAnchors) {
+
+        for (var i = 0; i < sourceAnchors.length; i++) {
+          var sourceUUID = toId + '_' + sourceAnchors[i];
+          instance.addEndpoint(toId, sourceEndpoint, {anchor: sourceAnchors[i], uuid: sourceUUID});
+        }
+        for (var j = 0; j < targetAnchors.length; j++) {
+          var targetUUID = toId + '_' + targetAnchors[j];
+          instance.addEndpoint(toId, targetEndpoint, {anchor: targetAnchors[j], uuid: targetUUID});
+        }
+
+      }
+
+
+    };
+
+  }
 ]);
 
 'use strict';
@@ -1136,7 +1137,7 @@ angular.module('stage').factory('Networkvalidator', [
 
 						var dependencyFound = false;
 						_(usedSources).each(function(source){
-							if(item.guid === source){
+							if(item.guid === source.guid){
 								dependencyFound = true;
 							}
 						});
