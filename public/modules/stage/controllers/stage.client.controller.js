@@ -111,7 +111,7 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
         jsPlumbInstance.draggable(jsPlumb.getSelector('.stage-container .panel'), {grid: [20, 20]});
 
 
-      }, 50);
+      }, 500);
 
     }
 
