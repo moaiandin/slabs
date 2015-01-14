@@ -84,11 +84,11 @@ angular.module('stage').factory('Jsplumb', [
       removeEndPoints: function (instance, endpointId, sourceAnchors, targetAnchors) {
 
         for (var i = 0; i < sourceAnchors.length; i++) {
-          var sourceUUID = endpointId + sourceAnchors[i];
+          var sourceUUID = endpointId + '_' +  sourceAnchors[i];
           instance.deleteEndpoint(sourceUUID);
         }
         for (var j = 0; j < targetAnchors.length; j++) {
-          var targetUUID = endpointId + targetAnchors[j];
+          var targetUUID = endpointId + '_' +  targetAnchors[j];
           instance.deleteEndpoint(targetUUID);
         }
 

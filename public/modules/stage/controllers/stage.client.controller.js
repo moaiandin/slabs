@@ -196,7 +196,7 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
           if (remove !== true) {
 
             item.dependencies = _.reject(item.dependencies, function (depObj) {
-              return depObj.id === sourceId;
+              return depObj.guid === sourceId;
             });
 
             var dependencyObject = {
@@ -209,7 +209,7 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
 
           } else {
             item.dependencies = _.reject(item.dependencies, function (depObj) {
-              return depObj.id === sourceId;
+              return depObj.guid === sourceId;
             });
           }
 

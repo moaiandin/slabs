@@ -1,9 +1,17 @@
 /* global require:true */
 'use strict';
 
-exports.execute = function(slabObj, dependencies, callback){
+module.exports = function() {
+
+    var exports = {};
+
+    exports.execute = function (slabObj, dependencies, callback) {
 
 
-    callback();
+        callback();
 
-};
+    };
+
+    return exports;
+
+}
