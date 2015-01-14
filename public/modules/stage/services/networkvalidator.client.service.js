@@ -51,6 +51,10 @@ angular.module('stage').factory('Networkvalidator', [
 
 						var dependencyFound = false;
 						_(usedSources).each(function(source){
+
+							console.log('source.guid : '+source.guid);
+							console.log('item.guid : '+item.guid);
+
 							if(item.guid === source.guid){
 								dependencyFound = true;
 							}
