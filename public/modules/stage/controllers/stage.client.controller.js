@@ -1,8 +1,6 @@
 'use strict';
 
 // todo - tests for this class.
-// TODO - on drag/drop resave top & left values
-// TODO -
 
 angular.module('stage').controller('StageController', ['$scope', '$state', 'SlabsServices', '$sce', 'Jsplumb', 'Networkvalidator', 'ngNotify', '$stateParams', '$q',
 
@@ -47,21 +45,8 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
 
       var defer = $q.defer();
 
-      var left = ( $('.stage').width() / 2 ) - 90;
-      var ticker = {
-        id: 'ticker',
-        guid: 'ticker',
-        name: 'ticker',
-        type: 'ticker',
-        left: left + 'px',
-        top: '50px',
-        slabsIn: 0,
-        slabsOut: 3,
-        dependencies: []
-      };
-
       if (vm.networkID === '') {
-        defer.resolve([ticker]);
+        defer.resolve([]);
       } else {
 
         // if a networkID is passed in we should return the network from the server
