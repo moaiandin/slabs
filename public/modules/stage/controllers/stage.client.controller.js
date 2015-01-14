@@ -195,12 +195,12 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
 
           if (remove !== true) {
 
-            item.dependencies = _.reject(item.dependencies, function (item) {
-              return item.id === sourceId;
+            item.dependencies = _.reject(item.dependencies, function (depObj) {
+              return depObj.guid === sourceId;
             });
 
             var dependencyObject = {
-              guid: item.guid,
+              guid: sourceId,
               sourceAnchor: sourceAnchor,
               targetAnchor: targetAnchor
             };
@@ -208,8 +208,8 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
             item.dependencies.push(dependencyObject);
 
           } else {
-            item.dependencies = _.reject(item.dependencies, function (item) {
-              return item.id === sourceId;
+            item.dependencies = _.reject(item.dependencies, function (depObj) {
+              return depObj.guid === sourceId;
             });
           }
 

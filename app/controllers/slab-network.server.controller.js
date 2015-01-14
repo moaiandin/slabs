@@ -25,9 +25,15 @@ module.exports = function() {
         var deferred = Q.defer();
 
         try{
-            require('./slab-network/slab-network.' + slabObj.type + '.controller.js')
-              .execute(slabObj, dependencies, deferred.resolve);
+
+            var controller = require('./slab-network/slab-network.' + slabObj.type + '.controller.js')();
+            controller.execute(slabObj, dependencies, deferred.resolve);
+
         }catch(err){
+
+            console.error('run failed');
+            console.error(err);
+
             slabObj.error = true;
             slabObj.result = err;
             deferred.resolve();
@@ -39,7 +45,9 @@ module.exports = function() {
 
     var runSlab = function(item, callback, fullList){
 
-        processSlabs(item.dependencies, fullList).then(function(fullList){
+        var depIDs = _.pluck(item.dependencies, 'guid');
+
+        processSlabs(depIDs, fullList).then(function(fullList){
 
             var dependencies = item.dependencies.map(function(dependencyObject){
                 return _.findWhere(fullList, {guid:dependencyObject.guid});
@@ -81,7 +89,7 @@ module.exports = function() {
 
     };
 
-    var startNetworkRun = function(slabs ){
+    var startNetworkRun = function(slabs){
 
         var deferred = Q.defer();
 
@@ -139,8 +147,6 @@ module.exports = function() {
 
                 // run the network and return the result
                 startNetworkRun(slabs).then(function(result){
-
-                    console.log('in here');
 
                     res.status(200);
                     res.send(result);

@@ -5,7 +5,7 @@
         "simple-grid" : "https://github.com/elliot-a/simple-grid.git"
       },
       "utility" : {
-        "aggregator" : "https://github.com/benbrunton/aggregator-slab.git"
+        "aggregator" : "https://github.com/elliot-a/aggregator-slab.git"
       },
       "source" : {
         "page-scraper" : "https://github.com/slabs-io/page-scraper.git"
