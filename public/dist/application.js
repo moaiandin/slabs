@@ -225,10 +225,11 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 		var vm = this;
 
 		// This provides Authentication context.
-		vm.authentication = Authentication;
-		vm.showList 			= false;
-		vm.networks  			= []; //SlabsServices.network.query();
-		vm.openNetwork    = openNetwork;
+		vm.authentication 	= Authentication;
+		vm.showList 				= false;
+		vm.networks  				= []; //SlabsServices.network.query();
+		vm.openNetwork    	= openNetwork;
+		vm.openNetworkView 	= openNetworkView;
 
 		init();
 
@@ -257,6 +258,14 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 			console.log(item);
 			$state.go('stage', {networkID:item._id});
 		}
+
+		function openNetworkView(viewId){
+			console.log('openNetworkView');
+			console.log(viewId);
+			var viewURL = '/networkview/' + viewId;
+			window.open(viewURL);
+		}
+
 
 	}
 ]);
@@ -434,12 +443,15 @@ angular.module('stage').factory('SlabsServices', ['$resource',
 
 		// Public API
 		return {
-			network			 : $resource('/network/'),
+			network			 : $resource('/network/', null, {
+				'update': { method:'PUT' }
+			}),
 			getNetwork	 : $resource('/network/:networkID'),
 			slabTypes		 : $resource('/slab/types'),
 			slab 				 : $resource('/slab/:slabType/:slabID'),
 			slabList 		 : $resource('/slab/:slabType')
 		};
+
 
 	}
 ]);
@@ -463,11 +475,16 @@ angular.module('network-list').directive('networkList', [
 					$scope.openNetwork(item);
 				};
 
+				vm.openNetworkView = function(viewId){
+					$scope.openNetworkView(viewId);
+				};
+
 			}],
 			controllerAs: 'ctrl',
 			scope: {
 				list:'=',
-				openNetwork:'&'
+				openNetwork:'&',
+				openNetworkView:'&'
 			}
 		};
 	}
@@ -579,6 +596,7 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
     $state.go('stage.sidebar');
 
     vm.networkID = $stateParams.networkID;
+    vm.buttonLabel = vm.networkID ? 'restart' : 'start';
     vm.slabs = [];
     vm.iframeSrc = '';
     vm.currentlyOpenSlab = '';
@@ -702,18 +720,26 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
         slabs: vm.slabs
       };
 
+      if(vm.networkID){
+        networkObject.id = vm.networkID;
+        SlabsServices.network.update({}, networkObject, success, fail);
+      }else{
+        SlabsServices.network.save({}, networkObject, success, fail);
+      }
+
       console.log('saving SlabNetwork');
       console.log(networkObject);
 
-      SlabsServices.network.save({}, networkObject,
-        function (resp) {
-          console.log('network saved!!');
-          console.log(resp);
-          vm.viewId = resp.viewId;
-        }, function (resp) {
-          console.log('network fail...');
-          console.log(resp);
-        });
+      function fail(resp) {
+        console.log('network fail...');
+        console.log(resp);
+      }
+
+      function success(resp){
+        console.log('network saved!!');
+        console.log(resp);
+        vm.viewId = resp.viewId;
+      }
 
     }
 
