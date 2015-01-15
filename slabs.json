@@ -7,6 +7,9 @@
       "utility" : {
         "aggregator" : "https://github.com/elliot-a/aggregator-slab.git"
       },
+      "ticker" : {
+        "ticker" : "https://github.com/slabs-io/ticker.git"
+      },
       "source" : {
         "page-scraper" : "https://github.com/slabs-io/page-scraper.git"
       }

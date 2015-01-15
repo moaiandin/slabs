@@ -21,6 +21,10 @@ var NetworkSchema = new Schema({
 	slabs:{
 		type:Schema.Types.Mixed,
 		default: {}
+	},
+	viewId:{
+		type:String,
+		default: ''
 	}
 });
 

@@ -59,11 +59,15 @@ module.exports = function(redisClient) {
         var folders = fs.readdirSync('app/slabs');
 
         slabTypes = _.map(folders, function(item){
-            var slabType = {
-                id:item,
-                label:item
-            };
-            return slabType;
+                var slabType = {
+                    id:item,
+                    label:item
+                };
+                return slabType;
+        });
+
+        slabTypes = _.filter(slabTypes, function(item){
+            return item.id !== 'ticker';
         });
 
         res.status(200);

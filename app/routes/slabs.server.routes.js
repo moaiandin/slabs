@@ -16,7 +16,8 @@ module.exports = function(app, redisClient) {
 	/* Create and List Slab Networks */
 	app.route('/network/')
 		.post(slabNetwork.create)
-		.get(slabNetwork.list);
+		.get(slabNetwork.list)
+		.put(slabNetwork.update);
 
 	app.route('/network/:networkId')
 		.get(slabNetwork.read);

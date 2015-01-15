@@ -611,17 +611,19 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
     function getInitialArray() {
 
       var defer = $q.defer();
+      var left = ( $('.stage').width() / 2 ) - 90;
+      var ticker = { id:'ticker', guid:'ticker', name:'ticker', type:'ticker', left:left+'px', top:'50px', slabsIn:0, slabsOut:3, dependencies:[] };
 
-      if (vm.networkID === '') {
-        defer.resolve([]);
-      } else {
+      if(vm.networkID === ''){
+        defer.resolve([ticker]);
+      }else{
 
-        // if a networkID is passed in we should return the network from the server
-        SlabsServices.getNetwork.get({networkID: vm.networkID})
-          .$promise.then(function (network) {
-            vm.title = network.title;
-            defer.resolve(network.slabs);
-          });
+          // if a networkID is passed in we should return the network from the server
+            SlabsServices.getNetwork.get({networkID:vm.networkID})
+          .$promise.then(function(network){
+              vm.title = network.title;
+              defer.resolve(network.slabs);
+            });
       }
 
       return defer.promise;
@@ -723,7 +725,11 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
     // open the slab settings window.
     function openSlabSettings(slab) {
 
+      console.log(slab);
+
       SlabsServices.slab.get({slabType: slab.type, slabID: slab.id}, function (obj) {
+
+        console.log(obj);
 
         if (obj.url) {
           vm.currentlyOpenSlab = slab.guid;
@@ -1122,9 +1128,6 @@ angular.module('stage').factory('Networkvalidator', [
 
 						var dependencyFound = false;
 						_(usedSources).each(function(source){
-
-							console.log('source.guid : '+source.guid);
-							console.log('item.guid : '+item.guid);
 
 							if(item.guid === source.guid){
 								dependencyFound = true;
