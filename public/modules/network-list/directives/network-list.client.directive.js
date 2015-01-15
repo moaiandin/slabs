@@ -17,11 +17,16 @@ angular.module('network-list').directive('networkList', [
 					$scope.openNetwork(item);
 				};
 
+				vm.openNetworkView = function(viewId){
+					$scope.openNetworkView(viewId);
+				};
+
 			},
 			controllerAs: 'ctrl',
 			scope: {
 				list:'=',
-				openNetwork:'&'
+				openNetwork:'&',
+				openNetworkView:'&'
 			}
 		};
 	}

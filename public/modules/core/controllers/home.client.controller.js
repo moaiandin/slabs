@@ -7,10 +7,11 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 		var vm = this;
 
 		// This provides Authentication context.
-		vm.authentication = Authentication;
-		vm.showList 			= false;
-		vm.networks  			= []; //SlabsServices.network.query();
-		vm.openNetwork    = openNetwork;
+		vm.authentication 	= Authentication;
+		vm.showList 				= false;
+		vm.networks  				= []; //SlabsServices.network.query();
+		vm.openNetwork    	= openNetwork;
+		vm.openNetworkView 	= openNetworkView;
 
 		init();
 
@@ -39,6 +40,14 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 			console.log(item);
 			$state.go('stage', {networkID:item._id});
 		}
+
+		function openNetworkView(viewId){
+			console.log('openNetworkView');
+			console.log(viewId);
+			var viewURL = '/networkview/' + viewId;
+			window.open(viewURL);
+		}
+
 
 	}
 ]);

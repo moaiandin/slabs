@@ -89,7 +89,7 @@ module.exports = function() {
 
     };
 
-    var startNetworkRun = function(slabs){
+    var startNetworkRun = function(slabs, networkID){
 
         var deferred = Q.defer();
 
@@ -105,16 +105,38 @@ module.exports = function() {
 
             var outputSlabs = _.where(runSlabsList, { type:'output' });
 
-            // todo - move this into the network view controller
+            // todo - move some of this into the network view controller ??
+
+            // delete the old network view object
+            Network.findById(networkID, function(err, doc){
+
+                var viewID = doc.viewId;
+
+                NetworkView.findByIdAndRemove(viewID, function(err, doc){
+                    if(err){
+                        // the network probably doesn't have a view save to it yet.
+                        console.log(err);
+                    }
+                });
+            });
+
+            // create a new network view object
             var networkViewObject = {
                 outputs : outputSlabs
             };
             var networkView = new NetworkView(networkViewObject);
-            networkView.save(function(err, doc){
 
-                deferred.resolve({
-                    status: 'success',
-                    viewId:doc._id
+            // save the network view
+            networkView.save(function(err, networkViewDoc){
+
+                // update the network with the new viewID
+                Network.update({_id:networkID}, {viewId:networkViewDoc._id}, null, function(err, networkDoc){
+
+                    deferred.resolve({
+                        status: 'success',
+                        viewId:networkViewDoc._id
+                    });
+
                 });
 
             });
@@ -145,8 +167,14 @@ module.exports = function() {
             var network = new Network(networkObj);
             network.save(function(err, doc){
 
+                if(err) {
+                    console.log(err);
+                }
+
+                var networkID = doc._id;
+
                 // run the network and return the result
-                startNetworkRun(slabs).then(function(result){
+                startNetworkRun(slabs, networkID).then(function(result){
 
                     res.status(200);
                     res.send(result);
@@ -216,6 +244,39 @@ module.exports = function() {
      */
     exports.update = function (req, res) {
 
+        var slabs       = req.body.slabs;
+        var title       = req.body.title;
+        var networkID   = req.body.id;
+
+        if (slabs.length > 0) {
+
+            var networkObj = {
+                title : title,
+                slabs : slabs
+            };
+
+            Network.update({_id:networkID}, networkObj, null, function(err, doc){
+
+                if(err) {
+                    console.log(err);
+                }
+
+                // run the network and return the result
+                startNetworkRun(slabs, networkID).then(function(result){
+
+                    res.status(200);
+                    res.send(result);
+                });
+
+            });
+
+
+        } else {
+            res.status(400).send({
+                message: 'invalid data sent - can\'t create slab network'
+            });
+        }
+
     };
 
 
@@ -231,7 +292,7 @@ module.exports = function() {
      */
     exports.list = function (req, res) {
 
-        Network.find().sort('-created').select('title created').limit(10).exec(function(err, networks) {
+        Network.find().sort('-created').select('title created viewId').limit(10).exec(function(err, networks) {
             if (err) {
                 return res.status(400).send({
                     message: errorHandler.getErrorMessage(err)
