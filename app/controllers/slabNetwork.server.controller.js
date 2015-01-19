@@ -11,7 +11,6 @@ var mongoose    = require('mongoose'),
     async       = require('async'),
     Q           = require('q'),
     SlabOutput  = mongoose.model('SlabOutput'),
-    NetworkView = mongoose.model('NetworkView'),
     Network     = mongoose.model('Network');
 
 module.exports = function() {
@@ -20,14 +19,14 @@ module.exports = function() {
 
 
     // run function for individual slabs
-    var run = function(slabObj, dependencies){
+    var run = function(slabObj, dependencies, networkObject){
 
         var deferred = Q.defer();
 
         try{
 
             var controller = require('./slab-network/slab-network.' + slabObj.type + '.controller.js')();
-            controller.execute(slabObj, dependencies, deferred.resolve);
+            controller.execute(slabObj, dependencies, deferred.resolve, networkObject);
 
         }catch(err){
 
@@ -43,24 +42,24 @@ module.exports = function() {
     };
 
 
-    var runSlab = function(item, callback, fullList){
+    var runSlab = function(item, callback, fullList, networkObject){
 
         var depIDs = _.pluck(item.dependencies, 'guid');
 
-        processSlabs(depIDs, fullList).then(function(fullList){
+        processSlabs(depIDs, fullList, networkObject).then(function(fullList){
 
             var dependencies = item.dependencies.map(function(dependencyObject){
                 return _.findWhere(fullList, {guid:dependencyObject.guid});
             });
 
-            run(item, dependencies).then(function(){
+            run(item, dependencies, networkObject).then(function(){
                 callback();
             });
         });
 
     };
 
-    var processSlabs = function(ids, fullList){
+    var processSlabs = function(ids, fullList, networkObject){
 
         var deferred = Q.defer();
 
@@ -71,7 +70,7 @@ module.exports = function() {
 
         // this creates a promise loop
         async.eachSeries(slabsToProcess, function(item, callback){
-            runSlab(item, callback, fullList);
+            runSlab(item, callback, fullList, networkObject);
         }, function(err){
             // if any of the file processing produced an error, err would equal that error
             if( err ) {
@@ -89,9 +88,10 @@ module.exports = function() {
 
     };
 
-    var startNetworkRun = function(slabs, networkID){
+    var startNetworkRun = function(slabs, networkObject){
 
         var deferred = Q.defer();
+        var networkID = networkObject._id;
 
         // get only the output slabs
         var outputSlabs = _.filter(slabs, function (item) {
@@ -101,45 +101,24 @@ module.exports = function() {
         // returns an array of only the ids
         var outputIDs = _.pluck(outputSlabs, 'guid');
 
-        processSlabs(outputIDs, slabs).then(function (runSlabsList) {
+        processSlabs(outputIDs, slabs, networkObject).then(function (runSlabsList) {
 
             var outputSlabs = _.where(runSlabsList, { type:'output' });
 
-            // todo - move some of this into the network view controller ??
-
-            // delete the old network view object
-            Network.findById(networkID, function(err, doc){
-
-                var viewID = doc.viewId;
-
-                NetworkView.findByIdAndRemove(viewID, function(err, doc){
-                    if(err){
-                        // the network probably doesn't have a view save to it yet.
-                        console.log(err);
-                    }
-                });
-            });
-
-            // create a new network view object
-            var networkViewObject = {
+            var runTime = new Date();
+            runTime = runTime.valueOf();
+            var updateObj = {
+                lastRun:runTime,
                 outputs : outputSlabs
             };
-            var networkView = new NetworkView(networkViewObject);
 
-            // save the network view
-            networkView.save(function(err, networkViewDoc){
+            // update the network with the new outputs & run time.
+            Network.update({_id:networkID}, updateObj, null, function(err, networkDoc){
 
-                // update the network with the new viewID
-                Network.update({_id:networkID}, {viewId:networkViewDoc._id}, null, function(err, networkDoc){
-
-                    deferred.resolve({
-                        status: 'success',
-                        viewId:networkViewDoc._id
-                    });
-
-                });
+                deferred.resolve();
 
             });
+
 
         });
 
@@ -174,10 +153,10 @@ module.exports = function() {
                 var networkID = doc._id;
 
                 // run the network and return the result
-                startNetworkRun(slabs, networkID).then(function(result){
+                startNetworkRun(slabs, doc).then(function(){
 
                     res.status(200);
-                    res.send(result);
+                    res.send( { status: 'success', networkID : networkID});
                 });
 
             });
@@ -255,17 +234,21 @@ module.exports = function() {
                 slabs : slabs
             };
 
-            Network.update({_id:networkID}, networkObj, null, function(err, doc){
+            Network.findById(networkID, function(err, doc){
 
-                if(err) {
-                    console.log(err);
-                }
+                if(err) console.log(err);
 
-                // run the network and return the result
-                startNetworkRun(slabs, networkID).then(function(result){
+                doc.update(networkObj, null, function(err, numberAffected, raw) {
 
-                    res.status(200);
-                    res.send(result);
+                    if(err) console.log(err);
+
+                    // run the network and return the result
+                    startNetworkRun(slabs, doc).then(function(){
+                        res.status(200);
+                        res.send( { status: 'success', networkID : networkID});
+
+                    });
+
                 });
 
             });
@@ -287,18 +270,76 @@ module.exports = function() {
 
     };
 
+
     /**
      * List of Slab networks
      */
     exports.list = function (req, res) {
 
-        Network.find().sort('-created').select('title created viewId').limit(10).exec(function(err, networks) {
+        Network.find().sort('-created').select('title created _id').limit(10).exec(function(err, networks) {
             if (err) {
                 return res.status(400).send({
                     message: errorHandler.getErrorMessage(err)
                 });
             } else {
                 res.json(networks);
+            }
+        });
+
+    };
+
+
+    /**
+     * Run a Slab network
+     */
+    exports.run = function (networkObj) {
+
+        // run the network and return the result
+        startNetworkRun(networkObj.slabs, networkObj).then(function(result){
+
+            console.log('network run from cron');
+            console.log(result);
+
+        });
+
+    };
+
+    /**
+     * Show the current Slab network view
+     */
+    exports.createView = function (req, res) {
+
+        var networkId = req.params.networkID;
+
+        Network.findById(networkId, function (err, doc) {
+
+            if (err) {
+
+                res.status(400).send({
+                    message: 'invalid id sent - can\'t find a saved slab network'
+                });
+
+            } else {
+
+                res.status(200);
+
+                if(!doc){
+                    console.error('Network not found.');
+                    return;
+                }
+
+                //console.log(doc.outputs);
+                var urlRoot = req.protocol + '://' + req.get('host');
+
+                // set the view settings
+                var isOdd = doc.outputs.length % 2 !== 0;
+                var settings = {
+                    isOdd: isOdd
+                };
+
+                var options = {root: urlRoot, outputs: doc.outputs, settings: settings};
+                res.render('default-view', options);
+
             }
         });
 

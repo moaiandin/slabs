@@ -28,6 +28,7 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 
 			SlabsServices.network.query(function(networks){
 				if(networks && networks.length > 0){
+					console.log(networks);
 					vm.showList 	= true;
 					vm.networks		= networks;
 				}
@@ -41,10 +42,10 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 			$state.go('stage', {networkID:item._id});
 		}
 
-		function openNetworkView(viewId){
+		function openNetworkView(networkId){
 			console.log('openNetworkView');
-			console.log(viewId);
-			var viewURL = '/networkview/' + viewId;
+			console.log(networkId);
+			var viewURL = '/networkview/' + networkId;
 			window.open(viewURL);
 		}
 

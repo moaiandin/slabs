@@ -8,18 +8,16 @@
 
 		<div class="row">
 			<p>
-				<a class="btn btn-primary btn-lg" href="/#!/stage/">Create a network</a>
+				<a class="btn btn-primary btn-lg" href="/#!/stage/">Create an network</a>
 			</p>
 		</div>
 	</div>
 
-
 	<network-list data-ng-if="homeController.showList"
 				  list="homeController.networks"
 				  open-network="homeController.openNetwork(item)"
-				  open-network-view="homeController.openNetworkView(viewId)"
+				  open-network-view="homeController.openNetworkView(networkId)"
 				  class="networkList">
 				  </network-list>
-
 
 </section>

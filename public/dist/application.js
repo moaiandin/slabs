@@ -246,6 +246,7 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 
 			SlabsServices.network.query(function(networks){
 				if(networks && networks.length > 0){
+					console.log(networks);
 					vm.showList 	= true;
 					vm.networks		= networks;
 				}
@@ -259,10 +260,10 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 			$state.go('stage', {networkID:item._id});
 		}
 
-		function openNetworkView(viewId){
+		function openNetworkView(networkId){
 			console.log('openNetworkView');
-			console.log(viewId);
-			var viewURL = '/networkview/' + viewId;
+			console.log(networkId);
+			var viewURL = '/networkview/' + networkId;
 			window.open(viewURL);
 		}
 
@@ -475,8 +476,8 @@ angular.module('network-list').directive('networkList', [
 					$scope.openNetwork(item);
 				};
 
-				vm.openNetworkView = function(viewId){
-					$scope.openNetworkView(viewId);
+				vm.openNetworkView = function(networkId){
+					$scope.openNetworkView(networkId);
 				};
 
 			}],
@@ -605,7 +606,6 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
     vm.runSlabNetwork = runSlabNetwork;
     vm.openSlabSettings = openSlabSettings;
     vm.viewOutput = viewOutput;
-    vm.viewId = null;
     vm.removeSlab = removeSlab;
 
 
@@ -630,7 +630,7 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
 
       var defer = $q.defer();
       var left = ( $('.stage').width() / 2 ) - 90;
-      var ticker = { id:'ticker', guid:'ticker', name:'ticker', type:'ticker', left:left+'px', top:'50px', slabsIn:0, slabsOut:3, dependencies:[] };
+      var ticker = { id:'ticker', settings: {tickInterval:1}, guid:'ticker', name:'ticker', type:'ticker', left:left+'px', top:'50px', slabsIn:0, slabsOut:3, dependencies:[] };
 
       if(vm.networkID === ''){
         defer.resolve([ticker]);
@@ -687,9 +687,9 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
 
     }
 
-    function openViewTab(viewId) {
+    function openViewTab(networkID) {
 
-      var viewURL = '/networkview/' + viewId;
+      var viewURL = '/networkview/' + networkID;
       window.open(viewURL);
 
     }
@@ -738,14 +738,14 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
       function success(resp){
         console.log('network saved!!');
         console.log(resp);
-        vm.viewId = resp.viewId;
+        vm.networkID = resp.networkID;
       }
 
     }
 
     // opens a network view page
     function viewOutput() {
-      openViewTab(vm.viewId);
+      openViewTab(vm.networkID);
     }
 
     // open the slab settings window.

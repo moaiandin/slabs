@@ -14,6 +14,10 @@ var SlabOutputSchema = new Schema({
 		type: Date,
 		default: Date.now
 	},
+	guid :{
+		type:String,
+		default :''
+	},
 	categories:{
 		type:[],
 		default: []

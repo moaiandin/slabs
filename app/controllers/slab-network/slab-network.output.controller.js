@@ -3,6 +3,7 @@
 'use strict';
 
 var mongoose    = require('mongoose'),
+    _           = require('lodash'),
     SlabOutput  = mongoose.model('SlabOutput');
 
 
@@ -19,35 +20,54 @@ module.exports = function() {
 
     var exports = {};
 
-    exports.execute = function (slabObj, dependencies, callback) {
+    exports.execute = function (slabObj, dependencies, callback, networkObject) {
 
         // todo - the data here needs to be added to so a trend can be seen,
-        // and not overwritten.
+        // todo - and not overwritten. -- the save needs to be an update so
+        // todo - that data can be added to the output.
 
+        SlabOutput.findOne({guid:slabObj.guid}, function(err, output){
 
-        // an output is only allowed
-        var dependencyData = dependencies[0];
+            // an output is only allowed one dependency
+            var dependencyData = dependencies[0];
+            var categories;
+            var data;
 
-        var outputDependencyData = {
-            categories: [new Date()],
-            settings: slabObj.settings,
-            data: [dependencyData.result],
-            labels: dependencyData.labels,
-            values: getValues(dependencyData.result)
-        };
+            if(output){
 
+                output.categories.push(new Date());
+                categories = output.categories;
 
-        var outputData = new SlabOutput(outputDependencyData);
-        outputData.save(function (err, doc) {
+                output.data.push(dependencyData.result);
+                data = output.data;
 
-            if (err) {
-                throw err;
+            }else{
+                categories = [new Date()];
+                data = [dependencyData.result];
             }
 
-            // create a url from the slab data and the id of the saved dependency data
-            slabObj.result = '/slab-files/output/' + slabObj.id + '/output/?id=' + doc._id;
-            callback();
+
+            var outputDependencyData = {
+                categories      : categories,
+                settings        : slabObj.settings,
+                guid            : slabObj.guid,
+                data            : data,
+                labels          : dependencyData.labels,
+                values          : getValues(dependencyData.result)
+            };
+
+
+            SlabOutput.findOneAndUpdate({guid:slabObj.guid}, outputDependencyData, { upsert: true }, function (err, doc) {
+
+                if (err) return console.log(err);
+
+                slabObj.result = '/slab-files/output/' + slabObj.id + '/output/?id=' + doc._id;
+                callback();
+
+            });
+
         });
+
 
     };
 

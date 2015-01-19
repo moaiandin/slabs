@@ -116,6 +116,7 @@ module.exports = function(db, redisClient) {
 
 	// serve up the external slab files
 	slabs.addSlabsFiles(app);
+	slabs.cronStart();
 
 	// serve up the slab network view files
 	app.use('/view-files', express.static(path.resolve('./app/views/networkviewfiles')));

@@ -17,8 +17,8 @@ angular.module('network-list').directive('networkList', [
 					$scope.openNetwork(item);
 				};
 
-				vm.openNetworkView = function(viewId){
-					$scope.openNetworkView(viewId);
+				vm.openNetworkView = function(networkId){
+					$scope.openNetworkView(networkId);
 				};
 
 			},
