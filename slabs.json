@@ -2,7 +2,8 @@
   "app" : {
     "slabs" : {
       "output" : {
-        "simple-grid" : "https://github.com/elliot-a/simple-grid.git"
+        "simple-grid" : "https://github.com/elliot-a/simple-grid.git",
+        "line-chart" : "https://github.com/elliot-a/line-chart-slab.git"
       },
       "utility" : {
         "aggregator" : "https://github.com/elliot-a/aggregator-slab.git"
