@@ -23,7 +23,7 @@ var NetworkSchema = new Schema({
 	},
 	tickerInterval:{
 		type:Number,
-		default : 43200000 // every 12 hours
+		default : 7200000 // every 12 hours
 	},
 	title:{
 		type:String,
