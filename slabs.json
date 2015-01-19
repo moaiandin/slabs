@@ -8,7 +8,8 @@
         "aggregator" : "https://github.com/elliot-a/aggregator-slab.git"
       },
       "source" : {
-        "page-scraper" : "https://github.com/slabs-io/page-scraper.git"
+        "page-scraper" : "https://github.com/slabs-io/page-scraper.git",
+        "tweets"       : "https://github.com/benbrunton/Twitter_source_slab.git"
       }
     }
   }
