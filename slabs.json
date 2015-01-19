@@ -13,7 +13,8 @@
       },
       "source" : {
         "page-scraper" : "https://github.com/slabs-io/page-scraper.git",
-        "tweets"       : "https://github.com/benbrunton/Twitter_source_slab.git"
+        "tweets"       : "https://github.com/benbrunton/Twitter_source_slab.git",
+				"weather"			 : "https://github.com/benbrunton/Weather_slab"
       }
     }
   }
