@@ -4,6 +4,7 @@ module.exports = function() {
 
     var exports = {};
 
+    /*
     function formatData(slab){
 
         // add uuid to data
@@ -20,6 +21,7 @@ module.exports = function() {
         slab.labels = formattedLabels;
 
     }
+    */
 
     function getLabels(slab, data, settings){
 
@@ -38,7 +40,7 @@ module.exports = function() {
     }
 
 
-    exports.execute = function (slabObj, deps, callback) {
+    exports.execute = function (slabObj, deps, callback, networkObject) {
 
         var slab = require('../../slabs/source/' + slabObj.id + '/process/app.js');
 
@@ -46,7 +48,7 @@ module.exports = function() {
 
             slabObj.labels = getLabels(slab, data, slabObj.settings);
             slabObj.result = data;
-            formatData(slabObj);
+            //formatData(slabObj);
 
             console.log('source data : ');
             console.log(data);

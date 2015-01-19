@@ -3,8 +3,7 @@
 module.exports = function(app, redisClient) {
 
 	var slabs 			= require('../controllers/slab.server.controller.js')(redisClient);
-	var slabNetwork = require('../controllers/slab-network.server.controller.js')(redisClient);
-	var slabNetworkView = require('../controllers/slab-network-view.server.controller.js')(redisClient);
+	var slabNetwork = require('../controllers/slabNetwork.server.controller.js')(redisClient);
 
 	// todo - not sure if some of these slabs should have there own controllers
 	// todo - at the moment there are only 'network' and 'slab' controllers.
@@ -23,8 +22,8 @@ module.exports = function(app, redisClient) {
 		.get(slabNetwork.read);
 
 	/* Return Slab Network View */
-	app.route('/networkview/:networkViewID')
-		.get(slabNetworkView.read);
+	app.route('/networkview/:networkID')
+		.get(slabNetwork.createView);
 
 	/* Slab Types */
 	app.route('/slab/types/')

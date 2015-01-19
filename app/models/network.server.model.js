@@ -3,8 +3,8 @@
 /**
  * Module dependencies.
  */
-var mongoose = require('mongoose'),
-	Schema = mongoose.Schema;
+var mongoose 				= require('mongoose'),
+	Schema 						= mongoose.Schema;
 
 /**
  * Network Schema
@@ -14,6 +14,17 @@ var NetworkSchema = new Schema({
 		type: Date,
 		default: Date.now
 	},
+	lastRun:{
+		type: Number,
+		default: function(){
+			var now = new Date();
+			return now.valueOf();
+		}
+	},
+	tickerInterval:{
+		type:Number,
+		default : 60000 // every minute
+	},
 	title:{
 		type:String,
 		default: 'Slab Network'
@@ -22,9 +33,9 @@ var NetworkSchema = new Schema({
 		type:Schema.Types.Mixed,
 		default: {}
 	},
-	viewId:{
-		type:String,
-		default: ''
+	outputs:{
+		type:[],
+		default:[]
 	}
 });
 
