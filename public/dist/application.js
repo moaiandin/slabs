@@ -607,6 +607,7 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
     vm.openSlabSettings = openSlabSettings;
     vm.viewOutput = viewOutput;
     vm.removeSlab = removeSlab;
+    vm.tickerInterval = 10;
 
 
     var jsPlumbInstance = Jsplumb.getInstance();
@@ -630,18 +631,32 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
 
       var defer = $q.defer();
       var left = ( $('.stage').width() / 2 ) - 90;
-      var ticker = { id:'ticker', settings: {tickInterval:1}, guid:'ticker', name:'ticker', type:'ticker', left:left+'px', top:'50px', slabsIn:0, slabsOut:3, dependencies:[] };
+      var ticker = { id:'ticker',
+        settings: {tickInterval:vm.tickerInterval},
+        guid:'ticker',
+        name:'ticker',
+        type:'ticker',
+        left:left+'px',
+        top:'50px',
+        slabsIn:0,
+        slabsOut:3,
+        dependencies:[] };
 
       if(vm.networkID === ''){
         defer.resolve([ticker]);
       }else{
 
-          // if a networkID is passed in we should return the network from the server
+            // if a networkID is passed in we should return the network from the server
             SlabsServices.getNetwork.get({networkID:vm.networkID})
           .$promise.then(function(network){
-              vm.title = network.title;
-              defer.resolve(network.slabs);
+                vm.title = network.title;
+                var ticker = _.findWhere(network.slabs, {guid:'ticker'});
+                vm.tickerInterval = ticker.settings.tickInterval;
+                defer.resolve(network.slabs);
             });
+
+
+
       }
 
       return defer.promise;
@@ -834,7 +849,11 @@ angular.module('stage').controller('StageController', ['$scope', '$state', 'Slab
       var slab = _.findWhere(vm.slabs, {guid: vm.currentlyOpenSlab});
       slab.settings = data;
 
-      //console.dir(vm.slabs);
+      if(slab.id === 'ticker'){
+        vm.tickerInterval = data.tickInterval;
+      }
+
+      console.dir(vm.slabs);
 
     }
 
