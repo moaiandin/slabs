@@ -135,11 +135,14 @@ module.exports = function() {
         var slabs = req.body.slabs;
         var title = req.body.title;
 
+        var tickerInterval = Number(slabs[0].settings.tickInterval) * 60000;
+
         if (slabs.length > 0) {
 
             var networkObj = {
                 title : title,
-                slabs : slabs
+                slabs : slabs,
+                tickerInterval : tickerInterval
             };
 
             // create a new network in the database
@@ -226,12 +229,14 @@ module.exports = function() {
         var slabs       = req.body.slabs;
         var title       = req.body.title;
         var networkID   = req.body.id;
+        var tickerInterval = Number(slabs[0].settings.tickInterval) * 60000;
 
         if (slabs.length > 0) {
 
             var networkObj = {
                 title : title,
-                slabs : slabs
+                slabs : slabs,
+                tickerInterval : tickerInterval
             };
 
             Network.findById(networkID, function(err, doc){
