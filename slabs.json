@@ -6,7 +6,7 @@
         "line-chart" : "https://github.com/elliot-a/line-chart-slab.git"
       },
       "utility" : {
-        "aggregator" : "https://github.com/elliot-a/aggregator-slab.git"
+        "aggregator" : "https://github.com/benbrunton/aggregator-slab.git"
       },
       "ticker" : {
         "ticker" : "https://github.com/slabs-io/ticker.git"
