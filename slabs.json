@@ -14,6 +14,8 @@
       "source" : {
         "page-scraper" : "https://github.com/slabs-io/page-scraper.git",
         "tweets"       : "https://github.com/benbrunton/Twitter_source_slab.git",
+        "facebook-pages": "git@github.com:benbrunton/facebook-pages-slab.git",
+        "facebook-shares": "git@github.com:benbrunton/facebook-shares-slab.git",
         "weather"	   : "https://github.com/benbrunton/Weather_slab"
       }
     }
