@@ -44,7 +44,9 @@ module.exports = function() {
 
         var slab = require('../../slabs/source/' + slabObj.id + '/process/app.js');
 
-        slab.getData(slabObj.settings || {}).then(function (data) {
+        slab.getData(slabObj.settings || {}, networkObject._id).then(function (data) {
+
+            console.log('running source [' + slabObj.id + '] in [' + networkObject._id + ']');
 
             slabObj.labels = getLabels(slab, data, slabObj.settings);
             slabObj.result = data;
