@@ -1,4 +1,4 @@
-<section data-ng-controller="HomeController as homeController" class="full-height">
+<section data-ng-controller="HomeController as homeController" class="full-height homepage">
 
 	<div class="jumbotron text-center">
 		<div class="row">
@@ -13,11 +13,26 @@
 		</div>
 	</div>
 
-	<network-list data-ng-if="homeController.showList"
-				  list="homeController.networks"
-				  open-network="homeController.openNetwork(item)"
-				  open-network-view="homeController.openNetworkView(networkId)"
-				  class="networkList">
-				  </network-list>
+	<div class="container-fluid">
+		<div class="row">
+
+			<network-list data-ng-if="homeController.showList"
+						  caption="Recent Networks"
+						  list="homeController.recentNetworks"
+						  open-network="homeController.openNetwork(item)"
+						  open-network-view="homeController.openNetworkView(networkId)"
+						  class="networkList networkListRecent">
+						  </network-list>
+
+			<network-list data-ng-if="homeController.showList"
+						  caption="Popular Networks"
+						  list="homeController.popularNetworks"
+						  open-network="homeController.openNetwork(item)"
+						  open-network-view="homeController.openNetworkView(networkId)"
+						  class="networkList networkListPopular">
+			</network-list>
+
+		</div>
+	</div>
 
 </section>
