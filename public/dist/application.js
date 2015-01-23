@@ -227,7 +227,8 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 		// This provides Authentication context.
 		vm.authentication 	= Authentication;
 		vm.showList 				= false;
-		vm.networks  				= []; //SlabsServices.network.query();
+		vm.recentNetworks  	= []; //SlabsServices.network.query();
+		vm.popularNetworks  = []; //SlabsServices.network.query();
 		vm.openNetwork    	= openNetwork;
 		vm.openNetworkView 	= openNetworkView;
 
@@ -238,21 +239,23 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 
 		function init(){
 
-			getNetworkList();
+			getNetworkLists();
 
 		}
 
-		function getNetworkList(){
+		function getNetworkLists(){
 
 			SlabsServices.network.query(function(networks){
 				if(networks && networks.length > 0){
 					console.log(networks);
 					vm.showList 	= true;
-					vm.networks		= networks;
+					vm.recentNetworks		= networks;
+					vm.popularNetworks = networks;
 				}
 			});
 
 		}
+
 
 		function openNetwork(item){
 			console.log('openNetwork');
@@ -469,6 +472,7 @@ angular.module('network-list').directive('networkList', [
 				var vm = this;
 
 				vm.list = $scope.list;
+				vm.caption = $scope.caption;
 
 				//////////
 
@@ -483,6 +487,7 @@ angular.module('network-list').directive('networkList', [
 			}],
 			controllerAs: 'ctrl',
 			scope: {
+				caption:'@',
 				list:'=',
 				openNetwork:'&',
 				openNetworkView:'&'

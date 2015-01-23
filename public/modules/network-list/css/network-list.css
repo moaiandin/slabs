@@ -1,3 +1,36 @@
-.network-list .actions .btn{
-    margin-left:10px;
+.homepage .jumbotron {
+    margin-bottom: 10px;
+    background: none;
+}
+
+
+.network-list .network-item {
+    background : #f9f9f9;
+    border:3px solid #fff;
+    padding: 20px;
+    padding-bottom: 60px;
+}
+
+
+.network-list .network-item .title{
+    font-weight: bold;
+}
+
+.network-list .network-item .date{
+    font-size: 11px;
+    color:#aaa;
+}
+
+.network-list .network-item .love {
+    font-weight: bold;
+}
+.network-list .network-item .love span{
+    color:red;
+    font-size: 12px;
+}
+
+.network-list .buttons {
+    position:absolute;
+    bottom:10px;
+    left:10px;
 }

@@ -10,6 +10,7 @@ angular.module('network-list').directive('networkList', [
 				var vm = this;
 
 				vm.list = $scope.list;
+				vm.caption = $scope.caption;
 
 				//////////
 
@@ -24,6 +25,7 @@ angular.module('network-list').directive('networkList', [
 			},
 			controllerAs: 'ctrl',
 			scope: {
+				caption:'@',
 				list:'=',
 				openNetwork:'&',
 				openNetworkView:'&'
