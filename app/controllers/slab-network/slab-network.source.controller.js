@@ -42,6 +42,15 @@ module.exports = function() {
 
     exports.execute = function (slabObj, deps, callback, networkObject) {
 
+        // todo - this may not be the most robust solution
+        // result already exists - no need to re-run slab
+        // this matters because some source slabs will give different results
+        // if run twice in quick succession
+        if(slabObj.result !== undefined){
+            callback();
+            return;
+        }
+
         var slab = require('../../slabs/source/' + slabObj.id + '/process/app.js');
 
         slab.getData(slabObj.settings || {}, networkObject._id).then(function (data) {
