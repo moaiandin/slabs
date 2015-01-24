@@ -2,21 +2,21 @@
   "app" : {
     "slabs" : {
       "output" : {
-        "simple-grid" : "https://github.com/elliot-a/simple-grid.git",
-        "line-chart" : "https://github.com/elliot-a/line-chart-slab.git"
+        "simple-grid" : "https://github.com/slabs-io/simple-grid.git",
+        "line-chart" : "https://github.com/slabs-io/line-chart-slab.git"
       },
       "utility" : {
-        "aggregator" : "https://github.com/benbrunton/aggregator-slab.git"
+        "aggregator" : "https://github.com/slabs-io/aggregator-slab.git"
       },
       "ticker" : {
         "ticker" : "https://github.com/slabs-io/ticker.git"
       },
       "source" : {
         "page-scraper" : "https://github.com/slabs-io/page-scraper.git",
-        "tweets"       : "https://github.com/benbrunton/Twitter_source_slab.git",
-        "facebook-pages": "https://github.com/benbrunton/facebook-pages-slab.git",
-        "facebook-shares": "https://github.com/benbrunton/facebook-shares-slab.git",
-        "weather"	   : "https://github.com/benbrunton/Weather_slab"
+        "tweets"       : "https://github.com/slabs-io/Twitter_source_slab.git",
+        "facebook-pages": "https://github.com/slabs-io/facebook-pages-slab.git",
+        "facebook-shares": "https://github.com/slabs-io/facebook-shares-slab.git",
+        "weather"	   : "https://github.com/slabs-io/Weather_slab"
       }
     }
   }
