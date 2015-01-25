@@ -76,10 +76,10 @@ module.exports = function() {
             if( err ) {
                 // One of the iterations produced an error.
                 // All processing will now stop.
-                console.log('A file failed to process');
+                //console.log('A file failed to process');
                 deferred.reject(err);
             } else {
-                //console.log('All files have been processed successfully');
+                ////console.log('All files have been processed successfully');
                 deferred.resolve(fullList);
             }
         });
@@ -150,7 +150,7 @@ module.exports = function() {
             network.save(function(err, doc){
 
                 if(err) {
-                    console.log(err);
+                    //console.log(err);
                 }
 
                 var networkID = doc._id;
@@ -241,11 +241,11 @@ module.exports = function() {
 
             Network.findById(networkID, function(err, doc){
 
-                if(err) console.log(err);
+                if(err) //console.log(err);
 
                 doc.update(networkObj, null, function(err, numberAffected, raw) {
 
-                    if(err) console.log(err);
+                    if(err) //console.log(err);
 
                     // run the network and return the result
                     startNetworkRun(slabs, doc).then(function(){
@@ -302,8 +302,8 @@ module.exports = function() {
         // run the network and return the result
         startNetworkRun(networkObj.slabs, networkObj).then(function(result){
 
-            console.log('network run from cron');
-            console.log(result);
+            //console.log('network run from cron');
+            //console.log(result);
 
         });
 
@@ -333,7 +333,7 @@ module.exports = function() {
                     return;
                 }
 
-                //console.log(doc.outputs);
+                ////console.log(doc.outputs);
                 var urlRoot = req.protocol + '://' + req.get('host');
 
                 // set the view settings

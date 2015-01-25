@@ -17,13 +17,13 @@ module.exports = function() {
             };
         });
 
-        console.log('sending to utility:', input);
+        //console.log('sending to utility:', input);
         slab.process({settings: slabObj.settings || {}, data: input})
           .then(function (data) {
                 slabObj.result = data.result;
                 slabObj.labels = data.labels;
 
-                console.log(slabObj);
+                //console.log(slabObj);
 
                 callback();
           });

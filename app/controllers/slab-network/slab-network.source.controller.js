@@ -55,14 +55,14 @@ module.exports = function() {
 
         slab.getData(slabObj.settings || {}, networkObject._id).then(function (data) {
 
-            console.log('running source [' + slabObj.id + '] in [' + networkObject._id + ']');
+            //console.log('running source [' + slabObj.id + '] in [' + networkObject._id + ']');
 
             slabObj.labels = getLabels(slab, data, slabObj.settings);
             slabObj.result = data;
             //formatData(slabObj);
 
-            console.log('source data : ');
-            console.log(data);
+            //console.log('source data : ');
+            //console.log(data);
             callback();
         });
     };

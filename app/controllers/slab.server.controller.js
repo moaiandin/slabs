@@ -38,8 +38,8 @@ module.exports = function(redisClient) {
                 };
                 return slab;
             }catch(err){
-                console.log('Error reading slabs-config.json from :'+name+' in'+type);
-                console.log(err);
+                //console.log('Error reading slabs-config.json from :'+name+' in'+type);
+                //console.log(err);
             }
 
         });
