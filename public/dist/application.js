@@ -227,10 +227,11 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 		// This provides Authentication context.
 		vm.authentication 	= Authentication;
 		vm.showList 				= false;
-		vm.recentNetworks  	= []; //SlabsServices.network.query();
-		vm.popularNetworks  = []; //SlabsServices.network.query();
+		vm.recentNetworks  	= [];
+		vm.popularNetworks  = [];
 		vm.openNetwork    	= openNetwork;
 		vm.openNetworkView 	= openNetworkView;
+		vm.upVote 					= upVote;
 
 		init();
 
@@ -245,29 +246,42 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 
 		function getNetworkLists(){
 
-			SlabsServices.network.query(function(networks){
-				if(networks && networks.length > 0){
-					console.log(networks);
-					vm.showList 	= true;
-					vm.recentNetworks		= networks;
-					vm.popularNetworks = networks;
+
+			SlabsServices.network.query(function(recentNetworks){
+
+				if(recentNetworks && recentNetworks.length > 0){
+
+					SlabsServices.getNetworksByVotes.query(function(popularNetworks){
+
+						if(popularNetworks && popularNetworks.length > 0){
+
+							vm.showList 	= true;
+							vm.popularNetworks = popularNetworks;
+							vm.recentNetworks		= recentNetworks;
+
+						}
+					});
+
 				}
 			});
+
+
+
 
 		}
 
 
 		function upVote(network){
 
-			var networkObject = {
-				id : network._id,
-				upVotes : network.upVotes + 1
-			};
+			var item = _.findWhere(vm.recentNetworks, {_id : network._id});
+			item.upVotes += 1;
+			item = _.findWhere(vm.popularNetworks, {_id : network._id});
+			item.upVotes += 1;
 
-			SlabsServices.network.update({}, networkObject, function(){
-				console.log('upvote success');
+			SlabsServices.upVoteNetwork.get({networkId:network._id}, function(){
+				//console.log('upvote success');
 			}, function(){
-				console.log('upvote fail');
+				//console.log('upvote fail');
 			});
 
 		}
@@ -462,13 +476,15 @@ angular.module('stage').factory('SlabsServices', ['$resource',
 
 		// Public API
 		return {
-			network			 : $resource('/network/', null, {
+			network			 					: $resource('/network/', null, {
 				'update': { method:'PUT' }
 			}),
-			getNetwork	 	: $resource('/network/:networkID'),
-			slabTypes		 	: $resource('/slab/types'),
-			slab 				 	: $resource('/slab/:slabType/:slabID'),
-			slabList 		 	: $resource('/slab/:slabType')
+			getNetwork	 					: $resource('/network/:networkID'),
+			upVoteNetwork					: $resource('/network/upvote/:networkId'),
+			getNetworksByVotes    : $resource('/network/byupvote/'),
+			slabTypes		 					: $resource('/slab/types'),
+			slab 				 					: $resource('/slab/:slabType/:slabID'),
+			slabList 		 					: $resource('/slab/:slabType')
 		};
 
 
@@ -485,6 +501,9 @@ angular.module('network-list').directive('networkList', [
 			controller: ["$scope", function($scope) {
 
 				var vm = this;
+
+				//console.log('$scope.list');
+				//console.log($scope.list);
 
 				vm.list = $scope.list;
 				vm.caption = $scope.caption;
