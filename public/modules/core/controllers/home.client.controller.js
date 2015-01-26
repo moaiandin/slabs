@@ -56,14 +56,15 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 		function upVote(network){
 
 			var item = _.findWhere(vm.recentNetworks, {_id : network._id});
-			item.upVotes += 1;
+			if(item) item.upVotes += 1;
 			item = _.findWhere(vm.popularNetworks, {_id : network._id});
-			item.upVotes += 1;
+			if(item) item.upVotes += 1;
 
 			SlabsServices.upVoteNetwork.get({networkId:network._id}, function(){
-				//console.log('upvote success');
-			}, function(){
-				//console.log('upvote fail');
+				console.log('upvote success');
+			}, function(err){
+				console.log('upvote fail');
+				console.log(err);
 			});
 
 		}

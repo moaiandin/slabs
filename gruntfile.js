@@ -188,6 +188,9 @@ module.exports = function(grunt) {
 	// Build task(s).
 	grunt.registerTask('build', ['setup', 'lint', 'loadConfig', 'ngAnnotate', 'uglify', 'cssmin']);
 
+	// Build task(s).
+	grunt.registerTask('quickbuild', ['lint', 'loadConfig', 'ngAnnotate', 'uglify', 'cssmin']);
+
 	// Test task.
 	grunt.registerTask('test', ['env:test', 'mochaTest', 'karma:unit']);
 };
