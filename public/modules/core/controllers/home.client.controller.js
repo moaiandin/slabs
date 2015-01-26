@@ -9,10 +9,11 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 		// This provides Authentication context.
 		vm.authentication 	= Authentication;
 		vm.showList 				= false;
-		vm.recentNetworks  	= []; //SlabsServices.network.query();
-		vm.popularNetworks  = []; //SlabsServices.network.query();
+		vm.recentNetworks  	= [];
+		vm.popularNetworks  = [];
 		vm.openNetwork    	= openNetwork;
 		vm.openNetworkView 	= openNetworkView;
+		vm.upVote 					= upVote;
 
 		init();
 
@@ -27,17 +28,45 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 
 		function getNetworkLists(){
 
-			SlabsServices.network.query(function(networks){
-				if(networks && networks.length > 0){
-					console.log(networks);
-					vm.showList 	= true;
-					vm.recentNetworks		= networks;
-					vm.popularNetworks = networks;
+
+			SlabsServices.network.query(function(recentNetworks){
+
+				if(recentNetworks && recentNetworks.length > 0){
+
+					SlabsServices.getNetworksByVotes.query(function(popularNetworks){
+
+						if(popularNetworks && popularNetworks.length > 0){
+
+							vm.showList 	= true;
+							vm.popularNetworks = popularNetworks;
+							vm.recentNetworks		= recentNetworks;
+
+						}
+					});
+
 				}
 			});
 
+
+
+
 		}
 
+
+		function upVote(network){
+
+			var item = _.findWhere(vm.recentNetworks, {_id : network._id});
+			item.upVotes += 1;
+			item = _.findWhere(vm.popularNetworks, {_id : network._id});
+			item.upVotes += 1;
+
+			SlabsServices.upVoteNetwork.get({networkId:network._id}, function(){
+				//console.log('upvote success');
+			}, function(){
+				//console.log('upvote fail');
+			});
+
+		}
 
 		function openNetwork(item){
 			console.log('openNetwork');

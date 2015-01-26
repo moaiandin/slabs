@@ -59,7 +59,7 @@ module.exports = function() {
 
             SlabOutput.findOneAndUpdate({guid:slabObj.guid}, outputDependencyData, { upsert: true }, function (err, doc) {
 
-                if (err) return //console.log(err);
+                if (err) return console.log(err);
 
                 slabObj.result = '/slab-files/output/' + slabObj.id + '/output/?id=' + doc._id;
                 callback();

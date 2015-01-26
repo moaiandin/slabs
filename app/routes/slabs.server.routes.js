@@ -15,11 +15,20 @@ module.exports = function(app, redisClient) {
 	/* Create and List Slab Networks */
 	app.route('/network/')
 		.post(slabNetwork.create)
-		.get(slabNetwork.list)
+		.get(slabNetwork.listByCreated)
 		.put(slabNetwork.update);
 
+	/* List of networks by Upvotes*/
+	app.route('/network/byupvote/')
+		.get(slabNetwork.listByVotes);
+
+  /* Get Network */
 	app.route('/network/:networkId')
 		.get(slabNetwork.read);
+
+	/* Upvote network */
+	app.route('/network/upvote/:networkId')
+		.get(slabNetwork.upVote);
 
 	/* Return Slab Network View */
 	app.route('/networkview/:networkID')

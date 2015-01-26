@@ -9,6 +9,9 @@ angular.module('network-list').directive('networkList', [
 
 				var vm = this;
 
+				//console.log('$scope.list');
+				//console.log($scope.list);
+
 				vm.list = $scope.list;
 				vm.caption = $scope.caption;
 
@@ -22,13 +25,18 @@ angular.module('network-list').directive('networkList', [
 					$scope.openNetworkView(networkId);
 				};
 
+				vm.upVote = function(network){
+					$scope.upVote(network);
+				};
+
 			},
 			controllerAs: 'ctrl',
 			scope: {
 				caption:'@',
 				list:'=',
 				openNetwork:'&',
-				openNetworkView:'&'
+				openNetworkView:'&',
+				upVote:'&'
 			}
 		};
 	}
