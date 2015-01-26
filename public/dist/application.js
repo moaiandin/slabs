@@ -257,6 +257,21 @@ angular.module('core').controller('HomeController', ['$scope', 'Authentication',
 		}
 
 
+		function upVote(network){
+
+			var networkObject = {
+				id : network._id,
+				upVotes : network.upVotes + 1
+			};
+
+			SlabsServices.network.update({}, networkObject, function(){
+				console.log('upvote success');
+			}, function(){
+				console.log('upvote fail');
+			});
+
+		}
+
 		function openNetwork(item){
 			console.log('openNetwork');
 			console.log(item);
@@ -450,10 +465,10 @@ angular.module('stage').factory('SlabsServices', ['$resource',
 			network			 : $resource('/network/', null, {
 				'update': { method:'PUT' }
 			}),
-			getNetwork	 : $resource('/network/:networkID'),
-			slabTypes		 : $resource('/slab/types'),
-			slab 				 : $resource('/slab/:slabType/:slabID'),
-			slabList 		 : $resource('/slab/:slabType')
+			getNetwork	 	: $resource('/network/:networkID'),
+			slabTypes		 	: $resource('/slab/types'),
+			slab 				 	: $resource('/slab/:slabType/:slabID'),
+			slabList 		 	: $resource('/slab/:slabType')
 		};
 
 
@@ -484,13 +499,18 @@ angular.module('network-list').directive('networkList', [
 					$scope.openNetworkView(networkId);
 				};
 
+				vm.upVote = function(network){
+					$scope.upVote(network);
+				};
+
 			}],
 			controllerAs: 'ctrl',
 			scope: {
 				caption:'@',
 				list:'=',
 				openNetwork:'&',
-				openNetworkView:'&'
+				openNetworkView:'&',
+				upVote:'&'
 			}
 		};
 	}

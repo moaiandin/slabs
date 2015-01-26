@@ -13,22 +13,22 @@
 		</div>
 	</div>
 
-	<div class="container-fluid">
+	<div class="container-fluid" data-ng-if="homeController.showList">
 		<div class="row">
 
-			<network-list data-ng-if="homeController.showList"
-						  caption="Recent Experiments"
+			<network-list caption="Recent Experiments"
 						  list="homeController.recentNetworks"
 						  open-network="homeController.openNetwork(item)"
 						  open-network-view="homeController.openNetworkView(networkId)"
+						  up-vote="homeController.upVote(network)"
 						  class="networkList networkListRecent">
 						  </network-list>
 
-			<network-list data-ng-if="homeController.showList"
-						  caption="Popular Experiments"
+			<network-list caption="Popular Experiments"
 						  list="homeController.popularNetworks"
 						  open-network="homeController.openNetwork(item)"
 						  open-network-view="homeController.openNetworkView(networkId)"
+						  up-vote="homeController.upVote(network)"
 						  class="networkList networkListPopular">
 			</network-list>
 

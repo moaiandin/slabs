@@ -21,6 +21,10 @@ var NetworkSchema = new Schema({
 			return now.valueOf();
 		}
 	},
+	upVotes: {
+		type:Number,
+		default : 0
+	},
 	tickerInterval:{
 		type:Number,
 		default : 7200000 // every 12 hours

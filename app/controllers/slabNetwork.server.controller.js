@@ -150,7 +150,7 @@ module.exports = function() {
             network.save(function(err, doc){
 
                 if(err) {
-                    //console.log(err);
+                    console.log(err);
                 }
 
                 var networkID = doc._id;
@@ -241,11 +241,11 @@ module.exports = function() {
 
             Network.findById(networkID, function(err, doc){
 
-                if(err) //console.log(err);
+                if(err) console.log(err);
 
                 doc.update(networkObj, null, function(err, numberAffected, raw) {
 
-                    if(err) //console.log(err);
+                    if(err) console.log(err);
 
                     // run the network and return the result
                     startNetworkRun(slabs, doc).then(function(){
@@ -275,13 +275,37 @@ module.exports = function() {
 
     };
 
-
     /**
-     * List of Slab networks
+     * Upvote a Slab network
      */
-    exports.list = function (req, res) {
+    exports.upVote = function (req, res) {
 
-        Network.find().sort('-created').select('title created _id').limit(10).exec(function(err, networks) {
+        var networkID = req.params.networkId;
+
+        Network.findById(networkID, function(err, doc){
+
+            if(err) console.log(err);
+
+            var upVotes = doc.upVotes | 0;
+            upVotes ++;
+
+            doc.update({upVotes:upVotes}, null, function(err, numberAffected, raw) {
+
+                if(err) console.log(err);
+
+                res.status(200);
+                res.send( { status: 'success', networkID : networkID});
+
+            });
+
+        });
+
+    };
+
+
+    function getList(req, res, sortBy){
+
+        Network.find().sort(sortBy).select('title created _id upVotes').limit(10).exec(function(err, networks) {
             if (err) {
                 return res.status(400).send({
                     message: errorHandler.getErrorMessage(err)
@@ -290,6 +314,26 @@ module.exports = function() {
                 res.json(networks);
             }
         });
+
+    }
+
+    /**
+     * List of Slab networks
+     */
+    exports.listByVotes = function (req, res) {
+
+        getList(req, res, '-upVotes');
+
+    };
+
+
+
+    /**
+     * List of Slab networks
+     */
+    exports.listByCreated = function (req, res) {
+
+        getList(req, res, '-created');
 
     };
 
